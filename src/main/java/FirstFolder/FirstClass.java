@@ -5,13 +5,17 @@
  */
 package FirstFolder;
 
+import Database.DbConnection;
+import java.sql.SQLException;
+
 /**
  *
  * @author ronyjack
  */
 public class FirstClass {
-    
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws SQLException {
         System.out.println("HELLO WORLD");
+        System.out.println(DbConnection.getConnection().isValid(1));
     }
 }
