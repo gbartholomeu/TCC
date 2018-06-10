@@ -5,11 +5,19 @@
  */
 package Login;
 
-import java.awt.Component;
+import Constantes.Const;
+import Database.DAO;
+import Utils.Cryptography;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 /**
@@ -37,24 +45,24 @@ public class LoginFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         editsPanel = new javax.swing.JPanel();
-        jTextField2 = new javax.swing.JTextField();
+        edtUser = new javax.swing.JTextField();
         lblUser = new javax.swing.JLabel();
-        editPassw = new javax.swing.JPasswordField();
+        edtPassw = new javax.swing.JPasswordField();
         lblPassw = new javax.swing.JLabel();
         buttonsPanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnLogin = new javax.swing.JButton();
+        btnExit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTextField2.setToolTipText("Insira o usuário de login");
-        jTextField2.setName("edtLogin"); // NOI18N
+        edtUser.setToolTipText("Insira o usuário de login");
+        edtUser.setName("edtUser"); // NOI18N
 
         lblUser.setText("Usuário:");
         lblUser.setName("lblUser"); // NOI18N
 
-        editPassw.setToolTipText("Insira a senha do usuário para login");
-        editPassw.setName("edtPassw"); // NOI18N
+        edtPassw.setToolTipText("Insira a senha do usuário para login");
+        edtPassw.setName("edtPassw"); // NOI18N
 
         lblPassw.setText("Senha:");
         lblPassw.setName("lblPassw"); // NOI18N
@@ -70,8 +78,8 @@ public class LoginFrame extends javax.swing.JFrame {
                     .addComponent(lblPassw))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(editPassw, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
-                    .addComponent(jTextField2))
+                    .addComponent(edtPassw, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                    .addComponent(edtUser))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
         editsPanelLayout.setVerticalGroup(
@@ -79,30 +87,37 @@ public class LoginFrame extends javax.swing.JFrame {
             .addGroup(editsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(edtUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblUser))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(editPassw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(edtPassw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblPassw))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         getContentPane().add(editsPanel, java.awt.BorderLayout.CENTER);
 
-        jButton1.setMnemonic('E');
-        jButton1.setText("Entrar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnLogin.setMnemonic('E');
+        btnLogin.setText("Entrar");
+        btnLogin.setName("btnLogin"); // NOI18N
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnLoginActionPerformed(evt);
             }
         });
 
-        jButton2.setMnemonic('S');
-        jButton2.setText("Sair");
-        jButton2.setMaximumSize(new java.awt.Dimension(63, 23));
-        jButton2.setMinimumSize(new java.awt.Dimension(63, 23));
-        jButton2.setPreferredSize(new java.awt.Dimension(63, 23));
+        btnExit.setMnemonic('S');
+        btnExit.setText("Sair");
+        btnExit.setMaximumSize(new java.awt.Dimension(63, 23));
+        btnExit.setMinimumSize(new java.awt.Dimension(63, 23));
+        btnExit.setName("btnExit"); // NOI18N
+        btnExit.setPreferredSize(new java.awt.Dimension(63, 23));
+        btnExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExitActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout buttonsPanelLayout = new javax.swing.GroupLayout(buttonsPanel);
         buttonsPanel.setLayout(buttonsPanelLayout);
@@ -110,17 +125,17 @@ public class LoginFrame extends javax.swing.JFrame {
             buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(buttonsPanelLayout.createSequentialGroup()
                 .addContainerGap(34, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(btnLogin)
                 .addGap(18, 18, 18)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(23, 23, 23))
         );
         buttonsPanelLayout.setVerticalGroup(
             buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(buttonsPanelLayout.createSequentialGroup()
                 .addGroup(buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLogin))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -129,24 +144,47 @@ public class LoginFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Component[] componentes = loginInstance.getComponents();
-        for(Component c: componentes){
-            System.out.println("================");
-            System.out.println("Name: " + c.getName());
-            System.out.println("Name: " + c.toString());
-            System.out.println("Size: " + c.getPreferredSize());
-            System.out.println("Size: " + c.getMinimumSize());
-            System.out.println("Size: " + c.getMaximumSize());
-            System.out.println("================");
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        try {
+            String retorno = "";
+            byte[] salt = null;
+            int interations = 1;
+            int key = 1;
+            byte[] password = null;
+
+            ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), edtUser.getText());
+            while (rs.next()) {
+                retorno = rs.getString("QTD");
+                salt = rs.getBytes("SALT");
+                interations = rs.getInt("INTERA");
+                key = rs.getInt("KEYL");
+                password = rs.getBytes("PASS");
+            }
+
+            if ("1".equalsIgnoreCase(retorno)) {
+                String passwordField = new String(edtPassw.getPassword());
+                byte[] hash = Cryptography.getEncryptedPassword(passwordField, salt, interations, key);
+                if (Arrays.equals(hash, password)) {
+                    JOptionPane.showMessageDialog(loginInstance, "Usuário logado");
+                } else {
+                    JOptionPane.showMessageDialog(loginInstance, "Senha incorreta");
+                }
+            } else {
+                JOptionPane.showMessageDialog(loginInstance, "Usuário não existe");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
+        loginInstance.dispose();
+    }//GEN-LAST:event_btnExitActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        //createLookAndFeel();
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             loginInstance = new LoginFrame();
@@ -156,33 +194,15 @@ public class LoginFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnExit;
+    private javax.swing.JButton btnLogin;
     private javax.swing.JPanel buttonsPanel;
-    private javax.swing.JPasswordField editPassw;
     private javax.swing.JPanel editsPanel;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JPasswordField edtPassw;
+    private javax.swing.JTextField edtUser;
     private javax.swing.JLabel lblPassw;
     private javax.swing.JLabel lblUser;
     // End of variables declaration//GEN-END:variables
-    private static void createLookAndFeel() {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-    }
 
     private void setConfiguration() {
         loginInstance.setLocationRelativeTo(null);
@@ -190,23 +210,23 @@ public class LoginFrame extends javax.swing.JFrame {
         loginInstance.setResizable(false);
         addListeners();
         SwingUtilities.invokeLater(() -> {
-            //jTextField1.requestFocus();
+            edtUser.requestFocus();
         });
     }
 
     private void addListeners() {
-        /*
+
         KeyListener enterListener = new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    jButton1ActionPerformed(null);
+                    btnLoginActionPerformed(null);
                 }
             }
         };
-        jTextField1.addKeyListener(enterListener);
-        jPasswordField1.addKeyListener(enterListener);
-        jButton1.addKeyListener(enterListener);
+        edtUser.addKeyListener(enterListener);
+        edtPassw.addKeyListener(enterListener);
+        btnLogin.addKeyListener(enterListener);
 
         KeyListener escListener = new KeyAdapter() {
             @Override
@@ -216,11 +236,13 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         };
-        jTextField1.addKeyListener(escListener);
-        jPasswordField1.addKeyListener(escListener);
-        jButton1.addKeyListener(escListener);
-        jButton2.addKeyListener(escListener);
-         */
+        edtUser.addKeyListener(escListener);
+        edtPassw.addKeyListener(escListener);
+        btnLogin.addKeyListener(escListener);
+        btnExit.addKeyListener(escListener);
     }
 
+    public LoginFrame getLoginFrame() {
+        return loginInstance;
+    }
 }
