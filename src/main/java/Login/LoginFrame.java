@@ -44,59 +44,61 @@ public class LoginFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        editsPanel = new javax.swing.JPanel();
-        edtUser = new javax.swing.JTextField();
+        pnlEdit = new javax.swing.JPanel();
+        txtUser = new javax.swing.JTextField();
         lblUser = new javax.swing.JLabel();
-        edtPassw = new javax.swing.JPasswordField();
+        txtPassw = new javax.swing.JPasswordField();
         lblPassw = new javax.swing.JLabel();
-        buttonsPanel = new javax.swing.JPanel();
+        pnlButtons = new javax.swing.JPanel();
         btnLogin = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        edtUser.setToolTipText("Insira o usuário de login");
-        edtUser.setName("edtUser"); // NOI18N
+        txtUser.setToolTipText("Insira o usuário de login");
+        txtUser.setName("txtUser"); // NOI18N
 
         lblUser.setText("Usuário:");
         lblUser.setName("lblUser"); // NOI18N
 
-        edtPassw.setToolTipText("Insira a senha do usuário para login");
-        edtPassw.setName("edtPassw"); // NOI18N
+        txtPassw.setToolTipText("Insira a senha do usuário para login");
+        txtPassw.setName("txtPassw"); // NOI18N
 
         lblPassw.setText("Senha:");
         lblPassw.setName("lblPassw"); // NOI18N
 
-        javax.swing.GroupLayout editsPanelLayout = new javax.swing.GroupLayout(editsPanel);
-        editsPanel.setLayout(editsPanelLayout);
-        editsPanelLayout.setHorizontalGroup(
-            editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(editsPanelLayout.createSequentialGroup()
+        javax.swing.GroupLayout pnlEditLayout = new javax.swing.GroupLayout(pnlEdit);
+        pnlEdit.setLayout(pnlEditLayout);
+        pnlEditLayout.setHorizontalGroup(
+            pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlEditLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblUser)
                     .addComponent(lblPassw))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(edtPassw, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
-                    .addComponent(edtUser))
+                .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtPassw, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                    .addComponent(txtUser))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
-        editsPanelLayout.setVerticalGroup(
-            editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(editsPanelLayout.createSequentialGroup()
+        pnlEditLayout.setVerticalGroup(
+            pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlEditLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(edtUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblUser))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(edtPassw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtPassw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblPassw))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        getContentPane().add(editsPanel, java.awt.BorderLayout.CENTER);
+        getContentPane().add(pnlEdit, java.awt.BorderLayout.CENTER);
+
+        pnlButtons.setLayout(new java.awt.GridLayout(1, 0));
 
         btnLogin.setMnemonic('E');
         btnLogin.setText("Entrar");
@@ -106,6 +108,7 @@ public class LoginFrame extends javax.swing.JFrame {
                 btnLoginActionPerformed(evt);
             }
         });
+        pnlButtons.add(btnLogin);
 
         btnExit.setMnemonic('S');
         btnExit.setText("Sair");
@@ -118,28 +121,9 @@ public class LoginFrame extends javax.swing.JFrame {
                 btnExitActionPerformed(evt);
             }
         });
+        pnlButtons.add(btnExit);
 
-        javax.swing.GroupLayout buttonsPanelLayout = new javax.swing.GroupLayout(buttonsPanel);
-        buttonsPanel.setLayout(buttonsPanelLayout);
-        buttonsPanelLayout.setHorizontalGroup(
-            buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(buttonsPanelLayout.createSequentialGroup()
-                .addContainerGap(34, Short.MAX_VALUE)
-                .addComponent(btnLogin)
-                .addGap(18, 18, 18)
-                .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(23, 23, 23))
-        );
-        buttonsPanelLayout.setVerticalGroup(
-            buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(buttonsPanelLayout.createSequentialGroup()
-                .addGroup(buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLogin))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        getContentPane().add(buttonsPanel, java.awt.BorderLayout.SOUTH);
+        getContentPane().add(pnlButtons, java.awt.BorderLayout.SOUTH);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -152,7 +136,7 @@ public class LoginFrame extends javax.swing.JFrame {
             int key = 1;
             byte[] password = null;
 
-            ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), edtUser.getText());
+            ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), txtUser.getText());
             while (rs.next()) {
                 retorno = rs.getString("QTD");
                 salt = rs.getBytes("SALT");
@@ -162,7 +146,7 @@ public class LoginFrame extends javax.swing.JFrame {
             }
 
             if ("1".equalsIgnoreCase(retorno)) {
-                String passwordField = new String(edtPassw.getPassword());
+                String passwordField = new String(txtPassw.getPassword());
                 byte[] hash = Cryptography.getEncryptedPassword(passwordField, salt, interations, key);
                 if (Arrays.equals(hash, password)) {
                     JOptionPane.showMessageDialog(loginInstance, "Usuário logado");
@@ -196,12 +180,12 @@ public class LoginFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnLogin;
-    private javax.swing.JPanel buttonsPanel;
-    private javax.swing.JPanel editsPanel;
-    private javax.swing.JPasswordField edtPassw;
-    private javax.swing.JTextField edtUser;
     private javax.swing.JLabel lblPassw;
     private javax.swing.JLabel lblUser;
+    private javax.swing.JPanel pnlButtons;
+    private javax.swing.JPanel pnlEdit;
+    private javax.swing.JPasswordField txtPassw;
+    private javax.swing.JTextField txtUser;
     // End of variables declaration//GEN-END:variables
 
     private void setConfiguration() {
@@ -210,7 +194,7 @@ public class LoginFrame extends javax.swing.JFrame {
         loginInstance.setResizable(false);
         addListeners();
         SwingUtilities.invokeLater(() -> {
-            edtUser.requestFocus();
+            txtUser.requestFocus();
         });
     }
 
@@ -224,8 +208,8 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         };
-        edtUser.addKeyListener(enterListener);
-        edtPassw.addKeyListener(enterListener);
+        txtUser.addKeyListener(enterListener);
+        txtPassw.addKeyListener(enterListener);
         btnLogin.addKeyListener(enterListener);
 
         KeyListener escListener = new KeyAdapter() {
@@ -236,8 +220,8 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         };
-        edtUser.addKeyListener(escListener);
-        edtPassw.addKeyListener(escListener);
+        txtUser.addKeyListener(escListener);
+        txtPassw.addKeyListener(escListener);
         btnLogin.addKeyListener(escListener);
         btnExit.addKeyListener(escListener);
     }
