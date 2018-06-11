@@ -45,9 +45,9 @@ public class LoginFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         pnlEdit = new javax.swing.JPanel();
-        edtUser = new javax.swing.JTextField();
+        txtUser = new javax.swing.JTextField();
         lblUser = new javax.swing.JLabel();
-        edtPassw = new javax.swing.JPasswordField();
+        txtPassw = new javax.swing.JPasswordField();
         lblPassw = new javax.swing.JLabel();
         pnlButtons = new javax.swing.JPanel();
         btnLogin = new javax.swing.JButton();
@@ -55,14 +55,14 @@ public class LoginFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        edtUser.setToolTipText("Insira o usuário de login");
-        edtUser.setName("edtUser"); // NOI18N
+        txtUser.setToolTipText("Insira o usuário de login");
+        txtUser.setName("txtUser"); // NOI18N
 
         lblUser.setText("Usuário:");
         lblUser.setName("lblUser"); // NOI18N
 
-        edtPassw.setToolTipText("Insira a senha do usuário para login");
-        edtPassw.setName("edtPassw"); // NOI18N
+        txtPassw.setToolTipText("Insira a senha do usuário para login");
+        txtPassw.setName("txtPassw"); // NOI18N
 
         lblPassw.setText("Senha:");
         lblPassw.setName("lblPassw"); // NOI18N
@@ -78,8 +78,8 @@ public class LoginFrame extends javax.swing.JFrame {
                     .addComponent(lblPassw))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(edtPassw, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
-                    .addComponent(edtUser))
+                    .addComponent(txtPassw, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                    .addComponent(txtUser))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
         pnlEditLayout.setVerticalGroup(
@@ -87,18 +87,18 @@ public class LoginFrame extends javax.swing.JFrame {
             .addGroup(pnlEditLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(edtUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblUser))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(edtPassw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtPassw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblPassw))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         getContentPane().add(pnlEdit, java.awt.BorderLayout.CENTER);
 
-        pnlButtons.setLayout(new java.awt.GridLayout());
+        pnlButtons.setLayout(new java.awt.GridLayout(1, 0));
 
         btnLogin.setMnemonic('E');
         btnLogin.setText("Entrar");
@@ -136,7 +136,7 @@ public class LoginFrame extends javax.swing.JFrame {
             int key = 1;
             byte[] password = null;
 
-            ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), edtUser.getText());
+            ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), txtUser.getText());
             while (rs.next()) {
                 retorno = rs.getString("QTD");
                 salt = rs.getBytes("SALT");
@@ -146,7 +146,7 @@ public class LoginFrame extends javax.swing.JFrame {
             }
 
             if ("1".equalsIgnoreCase(retorno)) {
-                String passwordField = new String(edtPassw.getPassword());
+                String passwordField = new String(txtPassw.getPassword());
                 byte[] hash = Cryptography.getEncryptedPassword(passwordField, salt, interations, key);
                 if (Arrays.equals(hash, password)) {
                     JOptionPane.showMessageDialog(loginInstance, "Usuário logado");
@@ -180,12 +180,12 @@ public class LoginFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnLogin;
-    private javax.swing.JPasswordField edtPassw;
-    private javax.swing.JTextField edtUser;
     private javax.swing.JLabel lblPassw;
     private javax.swing.JLabel lblUser;
     private javax.swing.JPanel pnlButtons;
     private javax.swing.JPanel pnlEdit;
+    private javax.swing.JPasswordField txtPassw;
+    private javax.swing.JTextField txtUser;
     // End of variables declaration//GEN-END:variables
 
     private void setConfiguration() {
@@ -194,7 +194,7 @@ public class LoginFrame extends javax.swing.JFrame {
         loginInstance.setResizable(false);
         addListeners();
         SwingUtilities.invokeLater(() -> {
-            edtUser.requestFocus();
+            txtUser.requestFocus();
         });
     }
 
@@ -208,8 +208,8 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         };
-        edtUser.addKeyListener(enterListener);
-        edtPassw.addKeyListener(enterListener);
+        txtUser.addKeyListener(enterListener);
+        txtPassw.addKeyListener(enterListener);
         btnLogin.addKeyListener(enterListener);
 
         KeyListener escListener = new KeyAdapter() {
@@ -220,8 +220,8 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         };
-        edtUser.addKeyListener(escListener);
-        edtPassw.addKeyListener(escListener);
+        txtUser.addKeyListener(escListener);
+        txtPassw.addKeyListener(escListener);
         btnLogin.addKeyListener(escListener);
         btnExit.addKeyListener(escListener);
     }

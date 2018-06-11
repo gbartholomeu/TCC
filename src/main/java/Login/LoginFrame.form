@@ -41,8 +41,8 @@
                   </Group>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="edtPassw" pref="126" max="32767" attributes="0"/>
-                      <Component id="edtUser" max="32767" attributes="0"/>
+                      <Component id="txtPassw" pref="126" max="32767" attributes="0"/>
+                      <Component id="txtUser" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace pref="15" max="32767" attributes="0"/>
               </Group>
@@ -53,12 +53,12 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="edtUser" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtUser" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="lblUser" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="edtPassw" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtPassw" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="lblPassw" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
@@ -67,10 +67,10 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JTextField" name="edtUser">
+        <Component class="javax.swing.JTextField" name="txtUser">
           <Properties>
             <Property name="toolTipText" type="java.lang.String" value="Insira o usu&#xe1;rio de login"/>
-            <Property name="name" type="java.lang.String" value="edtUser" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="txtUser" noResource="true"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="lblUser">
@@ -79,10 +79,10 @@
             <Property name="name" type="java.lang.String" value="lblUser" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JPasswordField" name="edtPassw">
+        <Component class="javax.swing.JPasswordField" name="txtPassw">
           <Properties>
             <Property name="toolTipText" type="java.lang.String" value="Insira a senha do usu&#xe1;rio para login"/>
-            <Property name="name" type="java.lang.String" value="edtPassw" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="txtPassw" noResource="true"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="lblPassw">
