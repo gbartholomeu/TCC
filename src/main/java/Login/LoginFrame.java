@@ -22,7 +22,7 @@ import javax.swing.SwingUtilities;
 
 /**
  *
- * @author ronyjack
+ * @author gbartholomeu
  */
 public class LoginFrame extends javax.swing.JFrame {
 
