@@ -7,7 +7,7 @@ package Constantes;
 
 /**
  *
- * @author ronyjack
+ * @author gbartholomeu
  */
 public class Const {
 

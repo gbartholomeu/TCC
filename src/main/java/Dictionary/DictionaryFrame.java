@@ -7,7 +7,7 @@ package Dictionary;
 
 /**
  *
- * @author ronyjack
+ * @author gbartholomeu
  */
 public class DictionaryFrame extends javax.swing.JFrame {
 

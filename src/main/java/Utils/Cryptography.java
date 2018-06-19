@@ -17,7 +17,7 @@ import javax.crypto.spec.PBEKeySpec;
 
 /**
  *
- * @author ronyjack
+ * @author gbartholomeu
  */
 public class Cryptography {
 
