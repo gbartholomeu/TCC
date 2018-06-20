@@ -20,7 +20,7 @@ public class Const {
                 + "       userpassword PASS \n"
                 + "FROM application_user \n"
                 + "WHERE username = ?;"),
-        SELECT_ALL_DICIONARIO(
+        SELECT_ALL_DICTIONARY(
                 "SELECT * "
                 + "FROM dictionary;"),
         INSERT_USER("INSERT INTO application_user \n"

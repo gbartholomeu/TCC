@@ -58,6 +58,7 @@ public class LoginFrame extends javax.swing.JFrame {
         btnExit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setName("frmLogin"); // NOI18N
 
         txtUser.setToolTipText("Insira o usuário de login");
         txtUser.setName("txtUser"); // NOI18N

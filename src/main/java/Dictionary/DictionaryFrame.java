@@ -70,6 +70,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         btnDetail = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setName("frmDictionary"); // NOI18N
 
         pnlMain.setLayout(new java.awt.BorderLayout());
 
@@ -152,9 +153,11 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
         btnSave.setMnemonic('S');
         btnSave.setText("Salvar");
+        btnSave.setEnabled(false);
 
         btnUndo.setMnemonic('D');
         btnUndo.setText("Desfazer");
+        btnUndo.setEnabled(false);
 
         btnDetail.setMnemonic('h');
         btnDetail.setText("Detalhe");
@@ -236,7 +239,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }
 
     private void fillTable() {
-        ResultSet rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICIONARIO.getSqlCode());
+        ResultSet rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICTIONARY.getSqlCode());
 
         while (getTblObjects().getRowCount() > 0) {
             ((DefaultTableModel) getTblObjects().getModel()).removeRow(0);
