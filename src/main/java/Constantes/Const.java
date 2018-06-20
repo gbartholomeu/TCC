@@ -22,12 +22,12 @@ public class Const {
                 + "WHERE username = ?;"),
         SELECT_ALL_DICIONARIO(
                 "SELECT * "
-                + "FROM dicionario;"),
+                + "FROM dictionary;"),
         INSERT_USER("INSERT INTO application_user \n"
                 + "(username, saltpass, interations, keylength, userpassword) \n"
                 + "values (?, ?, ?, ?, ?);"),
-        INSERT_OBJECT("INSERT INTO dicionario \n"
-                + "(ds_nome, ie_tipo, ds_conteudo, dt_insercao, nm_usuario) \n"
+        INSERT_OBJECT("INSERT INTO dictionary \n"
+                + "(ds_name, ie_type, ds_content, dt_insertion, nm_user) \n"
                 + "values (?, ?, ?, SYSDATE(), ?);");
 
         private final String SQLCode;

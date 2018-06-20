@@ -10,6 +10,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,11 +22,13 @@ public class DAO {
     private static Connection con = null;
     private static PreparedStatement stmt = null;
     private static ResultSet rs = null;
+    private final static Logger LOGGER = Logger.getLogger(DAO.class.getName());
 
     public static ResultSet selectFromDatabase(String sql, Object... args) {
         try {
             con = DbConnection.getConnection();
             stmt = con.prepareStatement(sql);
+
             if (args != null && args.length > 0) {
                 for (int i = 0; i < args.length; i++) {
                     if (args[i] != null) {
@@ -40,11 +44,10 @@ public class DAO {
                     }
                 }
             }
-
             printQuery();
             rs = stmt.executeQuery();
-        } catch (Exception ex) {
-            System.out.println("Failed to perform select from database: " + ex);
+        } catch (SQLException ex) {
+           LOGGER.info(new StringBuilder("Falha ao executar SELECT da base: ").append(ex).toString());
         }
         return rs;
     }
@@ -72,8 +75,8 @@ public class DAO {
 
             printQuery();
             updateReturn = stmt.executeUpdate();
-        } catch (SQLException | NumberFormatException ex) {
-            System.out.println("Failed to perform insert into database: " + ex);
+        } catch (SQLException ex) {
+           LOGGER.info(new StringBuilder("Falha ao executar INSERT na base: ").append(ex).toString());
         }
         return updateReturn;
     }

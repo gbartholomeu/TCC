@@ -5,17 +5,34 @@
  */
 package Dictionary;
 
+import Database.DAO;
+import com.mysql.cj.jdbc.result.ResultSetMetaData;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JTable;
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author gbartholomeu
  */
 public class DictionaryFrame extends javax.swing.JFrame {
 
+    private final JFrame parentFrame;
+    private final static Logger LOGGER = Logger.getLogger(DictionaryFrame.class.getName());
+
     /**
      * Creates new form DictionaryFrame
      */
-    public DictionaryFrame() {
+    public DictionaryFrame(JFrame parentFrame) {
         initComponents();
+        this.parentFrame = parentFrame;
     }
 
     /**
@@ -47,10 +64,10 @@ public class DictionaryFrame extends javax.swing.JFrame {
         scrpnlDetail = new javax.swing.JScrollPane();
         txtareaSQL = new javax.swing.JTextArea();
         pnlButtons = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        btnNew = new javax.swing.JButton();
+        btnSave = new javax.swing.JButton();
+        btnUndo = new javax.swing.JButton();
+        btnDetail = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -129,13 +146,18 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
         pnlMain.add(pnlGrid, java.awt.BorderLayout.CENTER);
 
-        jButton1.setText("jButton1");
+        btnNew.setMnemonic('N');
+        btnNew.setText("Novo");
+        btnNew.setToolTipText("");
 
-        jButton2.setText("jButton2");
+        btnSave.setMnemonic('S');
+        btnSave.setText("Salvar");
 
-        jButton3.setText("jButton3");
+        btnUndo.setMnemonic('D');
+        btnUndo.setText("Desfazer");
 
-        jButton4.setText("jButton4");
+        btnDetail.setMnemonic('h');
+        btnDetail.setText("Detalhe");
 
         javax.swing.GroupLayout pnlButtonsLayout = new javax.swing.GroupLayout(pnlButtons);
         pnlButtons.setLayout(pnlButtonsLayout);
@@ -143,24 +165,24 @@ public class DictionaryFrame extends javax.swing.JFrame {
             pnlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonsLayout.createSequentialGroup()
                 .addContainerGap(17, Short.MAX_VALUE)
-                .addGroup(pnlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1)
-                    .addComponent(jButton4)
-                    .addComponent(jButton3)
-                    .addComponent(jButton2))
+                .addGroup(pnlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnDetail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnUndo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnNew, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(17, 17, 17))
         );
         pnlButtonsLayout.setVerticalGroup(
             pnlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonsLayout.createSequentialGroup()
                 .addContainerGap(263, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(btnNew)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
+                .addComponent(btnSave)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3)
+                .addComponent(btnUndo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton4)
+                .addComponent(btnDetail)
                 .addContainerGap())
         );
 
@@ -171,46 +193,11 @@ public class DictionaryFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DictionaryFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DictionaryFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DictionaryFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DictionaryFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new DictionaryFrame().setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JButton btnDetail;
+    private javax.swing.JButton btnNew;
+    private javax.swing.JButton btnSave;
+    private javax.swing.JButton btnUndo;
     private javax.swing.JLabel lblObjectDate;
     private javax.swing.JLabel lblObjectName;
     private javax.swing.JLabel lblObjectType;
@@ -232,4 +219,88 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private javax.swing.JTextField txtObjectUser;
     private javax.swing.JTextArea txtareaSQL;
     // End of variables declaration//GEN-END:variables
+
+    public void setConfiguration() {
+        getDicFrame().setLocationRelativeTo(null);
+        getDicFrame().setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        getDicFrame().setResizable(false);
+        getDicFrame().setExtendedState(JFrame.MAXIMIZED_BOTH);
+        getDicFrame().addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                parentFrame.setVisible(true);
+                parentFrame.dispose();
+            }
+        });
+        fillTable();
+    }
+
+    private void fillTable() {
+        ResultSet rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICIONARIO.getSqlCode());
+
+        while (getTblObjects().getRowCount() > 0) {
+            ((DefaultTableModel) getTblObjects().getModel()).removeRow(0);
+        }
+        ((DefaultTableModel) getTblObjects().getModel()).setColumnCount(0);
+
+        ResultSetMetaData rsMd = null;
+        int columns = 0;
+        try {
+            rsMd = (ResultSetMetaData) rs.getMetaData();
+            columns = rsMd.getColumnCount();
+
+            for (int i = 1; i <= columns; i++) {
+                ((DefaultTableModel) getTblObjects().getModel()).addColumn(getColumnName(rsMd.getColumnName(i)));
+            }
+        } catch (SQLException ex) {
+            LOGGER.info(new StringBuilder("Falha na adição das colunas ao objeto de tabela: ").append(ex).toString());
+        }
+
+        try {
+            while (rs.next()) {
+                Object[] row = new Object[columns];
+                for (int i = 1; i <= columns; i++) {
+                    row[i - 1] = rs.getObject(i);
+                }
+
+                ((DefaultTableModel) getTblObjects().getModel()).insertRow(rs.getRow() - 1, row);
+            }
+        } catch (SQLException ex) {
+            LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
+        }
+        getTblObjects().removeColumn(getTblObjects().getColumnModel().getColumn(2));
+        getTblObjects().getSelectionModel().setSelectionInterval(0, 0);
+    }
+
+    private String getColumnName(String nmColunaCampo) {
+        switch (nmColunaCampo) {
+            case "nr_sequence": {
+                return "Sequência";
+            }
+            case "ds_name": {
+                return "Nome Objeto";
+            }
+            case "ie_type": {
+                return "Tipo Objeto";
+            }
+            case "dt_insertion": {
+                return "Data Inserção";
+            }
+            case "nm_user": {
+                return "Usuário";
+            }
+            case "ds_content": {
+                return "Conteúdo";
+            }
+        }
+        return "Error";
+    }
+
+    public DictionaryFrame getDicFrame() {
+        return this;
+    }
+
+    public JTable getTblObjects() {
+        return tblObjects;
+    }
 }

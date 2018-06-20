@@ -7,6 +7,7 @@ package Login;
 
 import Constantes.Const;
 import Database.DAO;
+import Dictionary.DictionaryFrame;
 import Utils.Cryptography;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -15,9 +16,11 @@ import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 /**
@@ -27,6 +30,7 @@ import javax.swing.SwingUtilities;
 public class LoginFrame extends javax.swing.JFrame {
 
     private static LoginFrame loginInstance = null;
+    private final static Logger LOGGER = Logger.getLogger(LoginFrame.class.getName());
 
     /**
      * Creates new form LoginFrame
@@ -129,36 +133,42 @@ public class LoginFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        try {
-            String retorno = "";
-            byte[] salt = null;
-            int interations = 1;
-            int key = 1;
-            byte[] password = null;
+        String retorno = "";
+        byte[] salt = null;
+        int interations = 1;
+        int key = 1;
+        byte[] password = null;
 
-            ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), txtUser.getText());
+        ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), txtUser.getText());
+        try {
             while (rs.next()) {
                 retorno = rs.getString("QTD");
+
                 salt = rs.getBytes("SALT");
                 interations = rs.getInt("INTERA");
                 key = rs.getInt("KEYL");
                 password = rs.getBytes("PASS");
             }
-
-            if ("1".equalsIgnoreCase(retorno)) {
-                String passwordField = new String(txtPassw.getPassword());
-                byte[] hash = Cryptography.getEncryptedPassword(passwordField, salt, interations, key);
-                if (Arrays.equals(hash, password)) {
-                    JOptionPane.showMessageDialog(loginInstance, "Usuário logado");
-                } else {
-                    JOptionPane.showMessageDialog(loginInstance, "Senha incorreta");
-                }
-            } else {
-                JOptionPane.showMessageDialog(loginInstance, "Usuário não existe");
-            }
         } catch (SQLException ex) {
-            Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.info(new StringBuilder().append("Falha na obtenção das configurações do usuário: ").append(ex).toString());
         }
+
+        if ("1".equalsIgnoreCase(retorno)) {
+            String passwordField = new String(txtPassw.getPassword());
+            byte[] hash = Cryptography.getEncryptedPassword(passwordField, salt, interations, key);
+            if (Arrays.equals(hash, password)) {
+                getTxtPassw().setText("");
+                DictionaryFrame dic = new DictionaryFrame(getLoginFrame());
+                dic.setConfiguration();
+                dic.setVisible(true);
+                getLoginFrame().setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(loginInstance, "Senha incorreta");
+            }
+        } else {
+            JOptionPane.showMessageDialog(loginInstance, "Usuário não existe");
+        }
+
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
@@ -172,8 +182,8 @@ public class LoginFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             loginInstance = new LoginFrame();
-            loginInstance.setConfiguration();
-            loginInstance.setVisible(true);
+            getLoginInstance().setConfiguration();
+            getLoginInstance().setVisible(true);
         });
     }
 
@@ -189,17 +199,16 @@ public class LoginFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void setConfiguration() {
-        loginInstance.setLocationRelativeTo(null);
-        loginInstance.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        loginInstance.setResizable(false);
+        getLoginFrame().setLocationRelativeTo(null);
+        getLoginFrame().setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        getLoginFrame().setResizable(false);
         addListeners();
         SwingUtilities.invokeLater(() -> {
-            txtUser.requestFocus();
+            getTxtUser().requestFocus();
         });
     }
 
     private void addListeners() {
-
         KeyListener enterListener = new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -208,9 +217,9 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         };
-        txtUser.addKeyListener(enterListener);
-        txtPassw.addKeyListener(enterListener);
-        btnLogin.addKeyListener(enterListener);
+        getTxtUser().addKeyListener(enterListener);
+        getTxtPassw().addKeyListener(enterListener);
+        getBtnLogin().addKeyListener(enterListener);
 
         KeyListener escListener = new KeyAdapter() {
             @Override
@@ -220,13 +229,37 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         };
-        txtUser.addKeyListener(escListener);
-        txtPassw.addKeyListener(escListener);
-        btnLogin.addKeyListener(escListener);
-        btnExit.addKeyListener(escListener);
+        getTxtUser().addKeyListener(escListener);
+        getTxtPassw().addKeyListener(escListener);
+        getBtnLogin().addKeyListener(escListener);
+        getBtnExit().addKeyListener(escListener);
     }
 
     public LoginFrame getLoginFrame() {
         return loginInstance;
+    }
+
+    public static LoginFrame getLoginInstance() {
+        return loginInstance;
+    }
+
+    public static void setLoginInstance(LoginFrame loginInstance) {
+        LoginFrame.loginInstance = loginInstance;
+    }
+
+    public JButton getBtnExit() {
+        return btnExit;
+    }
+
+    public JButton getBtnLogin() {
+        return btnLogin;
+    }
+
+    public JPasswordField getTxtPassw() {
+        return txtPassw;
+    }
+
+    public JTextField getTxtUser() {
+        return txtUser;
     }
 }
