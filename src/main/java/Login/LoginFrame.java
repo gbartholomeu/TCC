@@ -158,9 +158,8 @@ public class LoginFrame extends javax.swing.JFrame {
             String passwordField = new String(txtPassw.getPassword());
             byte[] hash = Cryptography.getEncryptedPassword(passwordField, salt, interations, key);
             if (Arrays.equals(hash, password)) {
-                getTxtPassw().setText("");
                 DictionaryFrame dic = new DictionaryFrame(getLoginFrame());
-                dic.setConfiguration();
+                SwingUtilities.invokeLater(() -> (dic.setConfiguration()));
                 dic.setVisible(true);
                 getLoginFrame().setVisible(false);
             } else {

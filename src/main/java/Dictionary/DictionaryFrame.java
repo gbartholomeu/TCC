@@ -7,14 +7,19 @@ package Dictionary;
 
 import Database.DAO;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
+import java.awt.CardLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.table.DefaultTableModel;
 
@@ -27,8 +32,13 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private final JFrame parentFrame;
     private final static Logger LOGGER = Logger.getLogger(DictionaryFrame.class.getName());
 
+    private String selectedCard = "cardGrid";
+    private CardLayout cardLayout = null;
+
     /**
      * Creates new form DictionaryFrame
+     *
+     * @param parentFrame
      */
     public DictionaryFrame(JFrame parentFrame) {
         initComponents();
@@ -92,7 +102,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         ));
         scrpnlGrid.setViewportView(tblObjects);
 
-        pnlGridView.add(scrpnlGrid, java.awt.BorderLayout.PAGE_START);
+        pnlGridView.add(scrpnlGrid, java.awt.BorderLayout.CENTER);
 
         pnlGrid.add(pnlGridView, "cardGrid");
 
@@ -129,7 +139,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         txtObjectUser.setPreferredSize(new java.awt.Dimension(80, 20));
         pnlSQLInformation.add(txtObjectUser);
 
-        pnlInformation.add(pnlSQLInformation, java.awt.BorderLayout.EAST);
+        pnlInformation.add(pnlSQLInformation, java.awt.BorderLayout.WEST);
 
         pnlDetailView.add(pnlInformation, java.awt.BorderLayout.NORTH);
 
@@ -150,17 +160,37 @@ public class DictionaryFrame extends javax.swing.JFrame {
         btnNew.setMnemonic('N');
         btnNew.setText("Novo");
         btnNew.setToolTipText("");
+        btnNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNewActionPerformed(evt);
+            }
+        });
 
         btnSave.setMnemonic('S');
         btnSave.setText("Salvar");
         btnSave.setEnabled(false);
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
 
         btnUndo.setMnemonic('D');
         btnUndo.setText("Desfazer");
         btnUndo.setEnabled(false);
+        btnUndo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUndoActionPerformed(evt);
+            }
+        });
 
         btnDetail.setMnemonic('h');
         btnDetail.setText("Detalhe");
+        btnDetail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDetailActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnlButtonsLayout = new javax.swing.GroupLayout(pnlButtons);
         pnlButtons.setLayout(pnlButtonsLayout);
@@ -195,6 +225,49 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewActionPerformed
+        getBtnDetail().setEnabled(false);
+        getBtnNew().setEnabled(false);
+        getBtnUndo().setEnabled(true);
+        getBtnSave().setEnabled(true);
+        changeCard();
+        fillFieldsEmptyText();
+        enabledAllFields(true);
+    }//GEN-LAST:event_btnNewActionPerformed
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        int retorno = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), getTxtObjectType().getText(), getTxtAreaSQL().getText(), "gabriel"/*getUsuarioAtivo()*/);
+        if (retorno == 0) {
+            JOptionPane.showMessageDialog(this, "Falha ao adicionar objeto");
+        }
+        changeCard();
+        fillTable();
+        getBtnUndo().setEnabled(false);
+        getBtnDetail().setEnabled(true);
+        getBtnSave().setEnabled(false);
+        getBtnNew().setEnabled(true);
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void btnUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUndoActionPerformed
+        getBtnDetail().setEnabled(true);
+        getBtnNew().setEnabled(true);
+        getBtnUndo().setEnabled(false);
+        getBtnSave().setEnabled(false);
+        changeCard();
+        enabledAllFields(false);
+    }//GEN-LAST:event_btnUndoActionPerformed
+
+    private void btnDetailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetailActionPerformed
+        if ("cardDetail".equalsIgnoreCase(selectedCard)) {
+            getBtnDetail().setText("Detalhe");
+        } else {
+            getBtnDetail().setText("Grid");
+        }
+        changeCard();
+        fillFieldsFromObject();
+        enabledAllFields(false);
+    }//GEN-LAST:event_btnDetailActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDetail;
@@ -236,6 +309,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
             }
         });
         fillTable();
+        setCardLayout((CardLayout) getPnlGrid().getLayout());
     }
 
     private void fillTable() {
@@ -299,6 +373,44 @@ public class DictionaryFrame extends javax.swing.JFrame {
         return "Error";
     }
 
+    private void changeCard() {
+        if ("cardDetail".equalsIgnoreCase(selectedCard)) {
+            selectedCard = "cardGrid";
+        } else {
+            selectedCard = "cardDetail";
+        }
+        getCardLayout().show(getPnlGrid(), selectedCard);
+    }
+
+    private void fillFieldsEmptyText() {
+        String str = "";
+        getTxtObjectName().setText(str);
+        getTxtObjectType().setText(str);
+        getTxtObjectDate().setText(str);
+        getTxtObjectUser().setText(str);
+        getTxtAreaSQL().setText(str);
+    }
+
+    private void fillFieldsFromObject() {
+        String str = "";
+        str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 1));
+        getTxtObjectName().setText(str);
+        str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 2));
+        getTxtObjectType().setText(str);
+        str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 3));
+        getTxtAreaSQL().setText(str);
+        str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 4));
+        getTxtObjectDate().setText(str);
+        str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 5));
+        getTxtObjectUser().setText(str);
+    }
+
+    private void enabledAllFields(boolean enabled) {
+        getTxtObjectName().setEnabled(enabled);
+        getTxtObjectType().setEnabled(enabled);
+        getTxtAreaSQL().setEnabled(enabled);
+    }
+
     public DictionaryFrame getDicFrame() {
         return this;
     }
@@ -306,4 +418,61 @@ public class DictionaryFrame extends javax.swing.JFrame {
     public JTable getTblObjects() {
         return tblObjects;
     }
+
+    public String getSelectedCard() {
+        return selectedCard;
+    }
+
+    public void setSelectedCard(String selectedCard) {
+        this.selectedCard = selectedCard;
+    }
+
+    public CardLayout getCardLayout() {
+        return cardLayout;
+    }
+
+    public void setCardLayout(CardLayout cardLayout) {
+        this.cardLayout = cardLayout;
+    }
+
+    public JPanel getPnlGrid() {
+        return pnlGrid;
+    }
+
+    public JButton getBtnDetail() {
+        return btnDetail;
+    }
+
+    public JButton getBtnNew() {
+        return btnNew;
+    }
+
+    public JButton getBtnSave() {
+        return btnSave;
+    }
+
+    public JButton getBtnUndo() {
+        return btnUndo;
+    }
+
+    public JTextField getTxtObjectDate() {
+        return txtObjectDate;
+    }
+
+    public JTextField getTxtObjectName() {
+        return txtObjectName;
+    }
+
+    public JTextField getTxtObjectType() {
+        return txtObjectType;
+    }
+
+    public JTextField getTxtObjectUser() {
+        return txtObjectUser;
+    }
+
+    public JTextArea getTxtAreaSQL() {
+        return txtareaSQL;
+    }
+
 }
