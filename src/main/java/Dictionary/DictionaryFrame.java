@@ -78,6 +78,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         btnSave = new javax.swing.JButton();
         btnUndo = new javax.swing.JButton();
         btnDetail = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("frmDictionary"); // NOI18N
@@ -86,6 +87,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
         pnlGrid.setLayout(new java.awt.CardLayout());
 
+        pnlGridView.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 5, 1));
         pnlGridView.setName(""); // NOI18N
         pnlGridView.setLayout(new java.awt.BorderLayout());
 
@@ -192,6 +194,14 @@ public class DictionaryFrame extends javax.swing.JFrame {
             }
         });
 
+        btnDelete.setMnemonic('E');
+        btnDelete.setText("Excluir");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlButtonsLayout = new javax.swing.GroupLayout(pnlButtons);
         pnlButtons.setLayout(pnlButtonsLayout);
         pnlButtonsLayout.setHorizontalGroup(
@@ -202,13 +212,14 @@ public class DictionaryFrame extends javax.swing.JFrame {
                     .addComponent(btnDetail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnUndo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnNew, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnNew, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(17, 17, 17))
         );
         pnlButtonsLayout.setVerticalGroup(
             pnlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonsLayout.createSequentialGroup()
-                .addContainerGap(263, Short.MAX_VALUE)
+                .addContainerGap(144, Short.MAX_VALUE)
                 .addComponent(btnNew)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSave)
@@ -216,7 +227,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 .addComponent(btnUndo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnDetail)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnDelete)
+                .addGap(17, 17, 17))
         );
 
         pnlMain.add(pnlButtons, java.awt.BorderLayout.EAST);
@@ -227,13 +240,16 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewActionPerformed
-        getBtnDetail().setEnabled(false);
         getBtnNew().setEnabled(false);
-        getBtnUndo().setEnabled(true);
         getBtnSave().setEnabled(true);
-        changeCard();
+        getBtnUndo().setEnabled(true);
+        getBtnDetail().setEnabled(false);
+        getBtnDelete().setEnabled(false);
         fillFieldsEmptyText();
         enabledAllFields(true);
+        if ("cardGrid".equalsIgnoreCase(selectedCard)) {
+            changeCard();
+        }
     }//GEN-LAST:event_btnNewActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
@@ -241,19 +257,21 @@ public class DictionaryFrame extends javax.swing.JFrame {
         if (retorno == 0) {
             JOptionPane.showMessageDialog(this, "Falha ao adicionar objeto");
         }
-        changeCard();
-        fillTable();
+        getBtnNew().setEnabled(true);
+        getBtnSave().setEnabled(false);
         getBtnUndo().setEnabled(false);
         getBtnDetail().setEnabled(true);
-        getBtnSave().setEnabled(false);
-        getBtnNew().setEnabled(true);
+        getBtnDelete().setEnabled(true);
+        fillTable(false);
+        enabledAllFields(false);
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUndoActionPerformed
-        getBtnDetail().setEnabled(true);
         getBtnNew().setEnabled(true);
-        getBtnUndo().setEnabled(false);
         getBtnSave().setEnabled(false);
+        getBtnUndo().setEnabled(false);
+        getBtnDetail().setEnabled(true);
+        getBtnDelete().setEnabled(true);
         changeCard();
         enabledAllFields(false);
     }//GEN-LAST:event_btnUndoActionPerformed
@@ -269,7 +287,13 @@ public class DictionaryFrame extends javax.swing.JFrame {
         enabledAllFields(false);
     }//GEN-LAST:event_btnDetailActionPerformed
 
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        int deleted = DAO.deleteFromDatabase(Constantes.Const.SQL.DELETE_OBJECT.getSqlCode(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
+        fillTable();
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnDetail;
     private javax.swing.JButton btnNew;
     private javax.swing.JButton btnSave;
@@ -313,6 +337,10 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }
 
     private void fillTable() {
+        fillTable(true);
+    }
+
+    private void fillTable(boolean selectFirstRow) {
         ResultSet rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICTIONARY.getSqlCode());
 
         while (getTblObjects().getRowCount() > 0) {
@@ -346,7 +374,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
             LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
         }
         getTblObjects().removeColumn(getTblObjects().getColumnModel().getColumn(2));
-        getTblObjects().getSelectionModel().setSelectionInterval(0, 0);
+        if (selectFirstRow) {
+            getTblObjects().getSelectionModel().setSelectionInterval(0, 0);
+        }
     }
 
     private String getColumnName(String nmColunaCampo) {
@@ -365,9 +395,6 @@ public class DictionaryFrame extends javax.swing.JFrame {
             }
             case "nm_user": {
                 return "Usuário";
-            }
-            case "ds_content": {
-                return "Conteúdo";
             }
         }
         return "Error";
@@ -453,6 +480,10 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
     public JButton getBtnUndo() {
         return btnUndo;
+    }
+
+    public JButton getBtnDelete() {
+        return btnDelete;
     }
 
     public JTextField getTxtObjectDate() {
