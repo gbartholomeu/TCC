@@ -108,6 +108,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
         pnlGrid.add(pnlGridView, "cardGrid");
 
+        pnlDetailView.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 5, 1));
         pnlDetailView.setLayout(new java.awt.BorderLayout());
 
         pnlInformation.setLayout(new java.awt.BorderLayout());
@@ -253,25 +254,26 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNewActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        int retorno = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), getTxtObjectType().getText(), getTxtAreaSQL().getText(), "gabriel"/*getUsuarioAtivo()*/);
-        if (retorno == 0) {
+        int insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), getTxtObjectType().getText(), getTxtAreaSQL().getText(), "gabriel"/*getUsuarioAtivo()*/);
+        if (insertDatabase == 0) {
             JOptionPane.showMessageDialog(this, "Falha ao adicionar objeto");
+        } else {
+            getBtnNew().setEnabled(true);
+            getBtnSave().setEnabled(false);
+            getBtnUndo().setEnabled(false);
+            getBtnDetail().setEnabled(true);
+            getBtnDelete().setEnabled(true);
+            fillTable(false);
+            enabledAllFields(false);
         }
-        getBtnNew().setEnabled(true);
-        getBtnSave().setEnabled(false);
-        getBtnUndo().setEnabled(false);
-        getBtnDetail().setEnabled(true);
-        getBtnDelete().setEnabled(true);
-        fillTable(false);
-        enabledAllFields(false);
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUndoActionPerformed
         getBtnNew().setEnabled(true);
         getBtnSave().setEnabled(false);
         getBtnUndo().setEnabled(false);
-        getBtnDetail().setEnabled(true);
-        getBtnDelete().setEnabled(true);
+        getBtnDetail().setEnabled(getTblObjects().getRowCount() > 0);
+        getBtnDelete().setEnabled(getTblObjects().getRowCount() > 0);
         changeCard();
         enabledAllFields(false);
     }//GEN-LAST:event_btnUndoActionPerformed
@@ -288,8 +290,18 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDetailActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        int deleted = DAO.deleteFromDatabase(Constantes.Const.SQL.DELETE_OBJECT.getSqlCode(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
-        fillTable();
+        int deleteFromDatabase = DAO.deleteFromDatabase(Constantes.Const.SQL.DELETE_OBJECT.getSqlCode(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
+        if (deleteFromDatabase == 0) {
+            JOptionPane.showMessageDialog(this, "Falha ao apagar o objeto do banco");
+        } else {
+            if ("cardDetail".equalsIgnoreCase(selectedCard)) {
+                changeCard();
+            }
+            fillTable();
+            getBtnDetail().setEnabled(getTblObjects().getRowCount() > 0);
+            getBtnDelete().setEnabled(getTblObjects().getRowCount() > 0);
+        }
+
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -333,6 +345,8 @@ public class DictionaryFrame extends javax.swing.JFrame {
             }
         });
         fillTable();
+        getBtnDetail().setEnabled(getTblObjects().getRowCount() > 0);
+        getBtnDelete().setEnabled(getTblObjects().getRowCount() > 0);
         setCardLayout((CardLayout) getPnlGrid().getLayout());
     }
 
@@ -373,7 +387,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
         }
-        getTblObjects().removeColumn(getTblObjects().getColumnModel().getColumn(2));
+        getTblObjects().removeColumn(getTblObjects().getColumnModel().getColumn(3));
         if (selectFirstRow) {
             getTblObjects().getSelectionModel().setSelectionInterval(0, 0);
         }

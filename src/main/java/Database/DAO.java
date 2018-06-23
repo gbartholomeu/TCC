@@ -78,7 +78,7 @@ public class DAO {
         }
         return updateReturn;
     }
-    
+
     public static int deleteFromDatabase(String sql, Object... args) {
         int updateReturn = 0;
         try {
@@ -100,7 +100,7 @@ public class DAO {
                 }
             }
             printQuery();
-            stmt.executeUpdate();
+            updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder("Falha ao executar INSERT na base: ").append(ex).toString());
         }
