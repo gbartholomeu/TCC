@@ -7,6 +7,7 @@ package Login;
 
 import Constantes.Const;
 import Database.DAO;
+import Dictionary.DictionaryFrame;
 import Utils.Cryptography;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -15,18 +16,21 @@ import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 /**
  *
- * @author ronyjack
+ * @author gbartholomeu
  */
 public class LoginFrame extends javax.swing.JFrame {
 
     private static LoginFrame loginInstance = null;
+    private final static Logger LOGGER = Logger.getLogger(LoginFrame.class.getName());
 
     /**
      * Creates new form LoginFrame
@@ -44,59 +48,62 @@ public class LoginFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        editsPanel = new javax.swing.JPanel();
-        edtUser = new javax.swing.JTextField();
+        pnlEdit = new javax.swing.JPanel();
+        txtUser = new javax.swing.JTextField();
         lblUser = new javax.swing.JLabel();
-        edtPassw = new javax.swing.JPasswordField();
+        txtPassw = new javax.swing.JPasswordField();
         lblPassw = new javax.swing.JLabel();
-        buttonsPanel = new javax.swing.JPanel();
+        pnlButtons = new javax.swing.JPanel();
         btnLogin = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setName("frmLogin"); // NOI18N
 
-        edtUser.setToolTipText("Insira o usuário de login");
-        edtUser.setName("edtUser"); // NOI18N
+        txtUser.setToolTipText("Insira o usuário de login");
+        txtUser.setName("txtUser"); // NOI18N
 
         lblUser.setText("Usuário:");
         lblUser.setName("lblUser"); // NOI18N
 
-        edtPassw.setToolTipText("Insira a senha do usuário para login");
-        edtPassw.setName("edtPassw"); // NOI18N
+        txtPassw.setToolTipText("Insira a senha do usuário para login");
+        txtPassw.setName("txtPassw"); // NOI18N
 
         lblPassw.setText("Senha:");
         lblPassw.setName("lblPassw"); // NOI18N
 
-        javax.swing.GroupLayout editsPanelLayout = new javax.swing.GroupLayout(editsPanel);
-        editsPanel.setLayout(editsPanelLayout);
-        editsPanelLayout.setHorizontalGroup(
-            editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(editsPanelLayout.createSequentialGroup()
+        javax.swing.GroupLayout pnlEditLayout = new javax.swing.GroupLayout(pnlEdit);
+        pnlEdit.setLayout(pnlEditLayout);
+        pnlEditLayout.setHorizontalGroup(
+            pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlEditLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblUser)
                     .addComponent(lblPassw))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(edtPassw, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
-                    .addComponent(edtUser))
+                .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtPassw, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                    .addComponent(txtUser))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
-        editsPanelLayout.setVerticalGroup(
-            editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(editsPanelLayout.createSequentialGroup()
+        pnlEditLayout.setVerticalGroup(
+            pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlEditLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(edtUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblUser))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(editsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(edtPassw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtPassw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblPassw))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        getContentPane().add(editsPanel, java.awt.BorderLayout.CENTER);
+        getContentPane().add(pnlEdit, java.awt.BorderLayout.CENTER);
+
+        pnlButtons.setLayout(new java.awt.GridLayout(1, 0));
 
         btnLogin.setMnemonic('E');
         btnLogin.setText("Entrar");
@@ -106,6 +113,7 @@ public class LoginFrame extends javax.swing.JFrame {
                 btnLoginActionPerformed(evt);
             }
         });
+        pnlButtons.add(btnLogin);
 
         btnExit.setMnemonic('S');
         btnExit.setText("Sair");
@@ -118,63 +126,49 @@ public class LoginFrame extends javax.swing.JFrame {
                 btnExitActionPerformed(evt);
             }
         });
+        pnlButtons.add(btnExit);
 
-        javax.swing.GroupLayout buttonsPanelLayout = new javax.swing.GroupLayout(buttonsPanel);
-        buttonsPanel.setLayout(buttonsPanelLayout);
-        buttonsPanelLayout.setHorizontalGroup(
-            buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(buttonsPanelLayout.createSequentialGroup()
-                .addContainerGap(34, Short.MAX_VALUE)
-                .addComponent(btnLogin)
-                .addGap(18, 18, 18)
-                .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(23, 23, 23))
-        );
-        buttonsPanelLayout.setVerticalGroup(
-            buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(buttonsPanelLayout.createSequentialGroup()
-                .addGroup(buttonsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLogin))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        getContentPane().add(buttonsPanel, java.awt.BorderLayout.SOUTH);
+        getContentPane().add(pnlButtons, java.awt.BorderLayout.SOUTH);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        try {
-            String retorno = "";
-            byte[] salt = null;
-            int interations = 1;
-            int key = 1;
-            byte[] password = null;
+        String retorno = "";
+        byte[] salt = null;
+        int interations = 1;
+        int key = 1;
+        byte[] password = null;
 
-            ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), edtUser.getText());
+        ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), txtUser.getText());
+        try {
             while (rs.next()) {
                 retorno = rs.getString("QTD");
+
                 salt = rs.getBytes("SALT");
                 interations = rs.getInt("INTERA");
                 key = rs.getInt("KEYL");
                 password = rs.getBytes("PASS");
             }
-
-            if ("1".equalsIgnoreCase(retorno)) {
-                String passwordField = new String(edtPassw.getPassword());
-                byte[] hash = Cryptography.getEncryptedPassword(passwordField, salt, interations, key);
-                if (Arrays.equals(hash, password)) {
-                    JOptionPane.showMessageDialog(loginInstance, "Usuário logado");
-                } else {
-                    JOptionPane.showMessageDialog(loginInstance, "Senha incorreta");
-                }
-            } else {
-                JOptionPane.showMessageDialog(loginInstance, "Usuário não existe");
-            }
         } catch (SQLException ex) {
-            Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.info(new StringBuilder().append("Falha na obtenção das configurações do usuário: ").append(ex).toString());
         }
+
+        if ("1".equalsIgnoreCase(retorno)) {
+            String passwordField = new String(txtPassw.getPassword());
+            byte[] hash = Cryptography.getEncryptedPassword(passwordField, salt, interations, key);
+            if (Arrays.equals(hash, password)) {
+                DictionaryFrame dic = new DictionaryFrame(getLoginFrame());
+                SwingUtilities.invokeLater(() -> (dic.setConfiguration()));
+                dic.setVisible(true);
+                getLoginFrame().setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(loginInstance, "Senha incorreta");
+            }
+        } else {
+            JOptionPane.showMessageDialog(loginInstance, "Usuário não existe");
+        }
+
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
@@ -188,34 +182,33 @@ public class LoginFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
             loginInstance = new LoginFrame();
-            loginInstance.setConfiguration();
-            loginInstance.setVisible(true);
+            getLoginInstance().setConfiguration();
+            getLoginInstance().setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnLogin;
-    private javax.swing.JPanel buttonsPanel;
-    private javax.swing.JPanel editsPanel;
-    private javax.swing.JPasswordField edtPassw;
-    private javax.swing.JTextField edtUser;
     private javax.swing.JLabel lblPassw;
     private javax.swing.JLabel lblUser;
+    private javax.swing.JPanel pnlButtons;
+    private javax.swing.JPanel pnlEdit;
+    private javax.swing.JPasswordField txtPassw;
+    private javax.swing.JTextField txtUser;
     // End of variables declaration//GEN-END:variables
 
     private void setConfiguration() {
-        loginInstance.setLocationRelativeTo(null);
-        loginInstance.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        loginInstance.setResizable(false);
+        getLoginFrame().setLocationRelativeTo(null);
+        getLoginFrame().setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        getLoginFrame().setResizable(false);
         addListeners();
         SwingUtilities.invokeLater(() -> {
-            edtUser.requestFocus();
+            getTxtUser().requestFocus();
         });
     }
 
     private void addListeners() {
-
         KeyListener enterListener = new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -224,9 +217,9 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         };
-        edtUser.addKeyListener(enterListener);
-        edtPassw.addKeyListener(enterListener);
-        btnLogin.addKeyListener(enterListener);
+        getTxtUser().addKeyListener(enterListener);
+        getTxtPassw().addKeyListener(enterListener);
+        getBtnLogin().addKeyListener(enterListener);
 
         KeyListener escListener = new KeyAdapter() {
             @Override
@@ -236,13 +229,37 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         };
-        edtUser.addKeyListener(escListener);
-        edtPassw.addKeyListener(escListener);
-        btnLogin.addKeyListener(escListener);
-        btnExit.addKeyListener(escListener);
+        getTxtUser().addKeyListener(escListener);
+        getTxtPassw().addKeyListener(escListener);
+        getBtnLogin().addKeyListener(escListener);
+        getBtnExit().addKeyListener(escListener);
     }
 
     public LoginFrame getLoginFrame() {
         return loginInstance;
+    }
+
+    public static LoginFrame getLoginInstance() {
+        return loginInstance;
+    }
+
+    public static void setLoginInstance(LoginFrame loginInstance) {
+        LoginFrame.loginInstance = loginInstance;
+    }
+
+    public JButton getBtnExit() {
+        return btnExit;
+    }
+
+    public JButton getBtnLogin() {
+        return btnLogin;
+    }
+
+    public JPasswordField getTxtPassw() {
+        return txtPassw;
+    }
+
+    public JTextField getTxtUser() {
+        return txtUser;
     }
 }

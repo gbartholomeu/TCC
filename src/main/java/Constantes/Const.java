@@ -7,7 +7,7 @@ package Constantes;
 
 /**
  *
- * @author ronyjack
+ * @author gbartholomeu
  */
 public class Const {
 
@@ -20,15 +20,17 @@ public class Const {
                 + "       userpassword PASS \n"
                 + "FROM application_user \n"
                 + "WHERE username = ?;"),
-        SELECT_ALL_DICIONARIO(
+        SELECT_ALL_DICTIONARY(
                 "SELECT * "
-                + "FROM dicionario;"),
+                + "FROM dictionary;"),
         INSERT_USER("INSERT INTO application_user \n"
                 + "(username, saltpass, interations, keylength, userpassword) \n"
                 + "values (?, ?, ?, ?, ?);"),
-        INSERT_OBJECT("INSERT INTO dicionario \n"
-                + "(ds_nome, ie_tipo, ds_conteudo, dt_insercao, nm_usuario) \n"
-                + "values (?, ?, ?, SYSDATE(), ?);");
+        INSERT_OBJECT("INSERT INTO dictionary \n"
+                + "(ds_name, ie_type, ds_content, dt_insertion, nm_user) \n"
+                + "values (?, ?, ?, SYSDATE(), ?);"),
+        DELETE_OBJECT("DELETE FROM dictionary \n"
+                + " WHERE nr_sequence = ?;");
 
         private final String SQLCode;
 
