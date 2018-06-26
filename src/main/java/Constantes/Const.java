@@ -28,7 +28,9 @@ public class Const {
                 + "values (?, ?, ?, ?, ?);"),
         INSERT_OBJECT("INSERT INTO dictionary \n"
                 + "(ds_name, ie_type, ds_content, dt_insertion, nm_user) \n"
-                + "values (?, ?, ?, SYSDATE(), ?);");
+                + "values (?, ?, ?, SYSDATE(), ?);"),
+        DELETE_OBJECT("DELETE FROM dictionary \n"
+                + " WHERE nr_sequence = ?;");
 
         private final String SQLCode;
 
