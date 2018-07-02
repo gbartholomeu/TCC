@@ -17,10 +17,12 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -55,6 +57,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         pnlMain = new javax.swing.JPanel();
+        tbdpanelMain = new javax.swing.JTabbedPane();
         pnlGrid = new javax.swing.JPanel();
         pnlGridView = new javax.swing.JPanel();
         scrpnlGrid = new javax.swing.JScrollPane();
@@ -73,6 +76,11 @@ public class DictionaryFrame extends javax.swing.JFrame {
         pnlSQL = new javax.swing.JPanel();
         scrpnlDetail = new javax.swing.JScrollPane();
         txtareaSQL = new javax.swing.JTextArea();
+        pnlHistory = new javax.swing.JPanel();
+        scrpnlHistoryGrid = new javax.swing.JScrollPane();
+        tblObjectHistory = new javax.swing.JTable();
+        scrpnlHistoryContent = new javax.swing.JScrollPane();
+        txtareaHistoryContent = new javax.swing.JTextArea();
         pnlButtons = new javax.swing.JPanel();
         btnNew = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
@@ -158,7 +166,35 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
         pnlGrid.add(pnlDetailView, "cardDetail");
 
-        pnlMain.add(pnlGrid, java.awt.BorderLayout.CENTER);
+        tbdpanelMain.addTab("Objetos", pnlGrid);
+
+        pnlHistory.setLayout(new java.awt.BorderLayout());
+
+        tblObjectHistory.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        scrpnlHistoryGrid.setViewportView(tblObjectHistory);
+
+        pnlHistory.add(scrpnlHistoryGrid, java.awt.BorderLayout.NORTH);
+
+        txtareaHistoryContent.setColumns(20);
+        txtareaHistoryContent.setRows(5);
+        scrpnlHistoryContent.setViewportView(txtareaHistoryContent);
+
+        pnlHistory.add(scrpnlHistoryContent, java.awt.BorderLayout.CENTER);
+
+        tbdpanelMain.addTab("Histórico", pnlHistory);
+
+        pnlMain.add(tbdpanelMain, java.awt.BorderLayout.CENTER);
+        tbdpanelMain.getAccessibleContext().setAccessibleName("tbtPaneMain");
 
         btnNew.setMnemonic('N');
         btnNew.setText("Novo");
@@ -207,8 +243,8 @@ public class DictionaryFrame extends javax.swing.JFrame {
         pnlButtons.setLayout(pnlButtonsLayout);
         pnlButtonsLayout.setHorizontalGroup(
             pnlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonsLayout.createSequentialGroup()
-                .addContainerGap(17, Short.MAX_VALUE)
+            .addGroup(pnlButtonsLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pnlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnDetail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnUndo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -220,7 +256,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         pnlButtonsLayout.setVerticalGroup(
             pnlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonsLayout.createSequentialGroup()
-                .addContainerGap(144, Short.MAX_VALUE)
+                .addContainerGap(281, Short.MAX_VALUE)
                 .addComponent(btnNew)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSave)
@@ -263,7 +299,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
             getBtnUndo().setEnabled(false);
             getBtnDetail().setEnabled(true);
             getBtnDelete().setEnabled(true);
-            fillTable(false);
+            fillObjectsTable(false);
             enabledAllFields(false);
         }
     }//GEN-LAST:event_btnSaveActionPerformed
@@ -297,7 +333,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
             if ("cardDetail".equalsIgnoreCase(selectedCard)) {
                 changeCard();
             }
-            fillTable();
+            fillObjectsTable();
             getBtnDetail().setEnabled(getTblObjects().getRowCount() > 0);
             getBtnDelete().setEnabled(getTblObjects().getRowCount() > 0);
         }
@@ -318,21 +354,42 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private javax.swing.JPanel pnlDetailView;
     private javax.swing.JPanel pnlGrid;
     private javax.swing.JPanel pnlGridView;
+    private javax.swing.JPanel pnlHistory;
     private javax.swing.JPanel pnlInformation;
     private javax.swing.JPanel pnlMain;
     private javax.swing.JPanel pnlSQL;
     private javax.swing.JPanel pnlSQLInformation;
     private javax.swing.JScrollPane scrpnlDetail;
     private javax.swing.JScrollPane scrpnlGrid;
+    private javax.swing.JScrollPane scrpnlHistoryContent;
+    private javax.swing.JScrollPane scrpnlHistoryGrid;
+    private javax.swing.JTabbedPane tbdpanelMain;
+    private javax.swing.JTable tblObjectHistory;
     private javax.swing.JTable tblObjects;
     private javax.swing.JTextField txtObjectDate;
     private javax.swing.JTextField txtObjectName;
     private javax.swing.JTextField txtObjectType;
     private javax.swing.JTextField txtObjectUser;
+    private javax.swing.JTextArea txtareaHistoryContent;
     private javax.swing.JTextArea txtareaSQL;
     // End of variables declaration//GEN-END:variables
 
     public void setConfiguration() {
+        setDicFrameConfiguration();
+        getTbdpanelMain().addChangeListener((ChangeEvent e) -> {
+            if (e.getSource() instanceof JTabbedPane) {
+                JTabbedPane selectedPane = (JTabbedPane) e.getSource();
+                if (1 == selectedPane.getSelectedIndex()) {
+                    fillHistoryTable();
+                }
+            }
+        });
+        fillObjectsTable();
+        setButtonsConfiguration();
+        setCardLayout((CardLayout) getPnlGrid().getLayout());
+    }
+
+    private void setDicFrameConfiguration() {
         getDicFrame().setLocationRelativeTo(null);
         getDicFrame().setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         getDicFrame().setResizable(false);
@@ -344,17 +401,18 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 parentFrame.dispose();
             }
         });
-        fillTable();
+    }
+
+    private void setButtonsConfiguration() {
         getBtnDetail().setEnabled(getTblObjects().getRowCount() > 0);
         getBtnDelete().setEnabled(getTblObjects().getRowCount() > 0);
-        setCardLayout((CardLayout) getPnlGrid().getLayout());
     }
 
-    private void fillTable() {
-        fillTable(true);
+    private void fillObjectsTable() {
+        fillObjectsTable(true);
     }
 
-    private void fillTable(boolean selectFirstRow) {
+    private void fillObjectsTable(boolean selectFirstRow) {
         ResultSet rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICTIONARY.getSqlCode());
 
         while (getTblObjects().getRowCount() > 0) {
@@ -390,6 +448,48 @@ public class DictionaryFrame extends javax.swing.JFrame {
         getTblObjects().removeColumn(getTblObjects().getColumnModel().getColumn(3));
         if (selectFirstRow) {
             getTblObjects().getSelectionModel().setSelectionInterval(0, 0);
+        }
+    }
+
+    private void fillHistoryTable() {
+        fillHistoryTable(true);
+    }
+
+    private void fillHistoryTable(boolean selectFirstRow) {
+        ResultSet rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICTIONARY_HISTORY.getSqlCode(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
+
+        while (getTblObjectHistory().getRowCount() > 0) {
+            ((DefaultTableModel) getTblObjectHistory().getModel()).removeRow(0);
+        }
+        ((DefaultTableModel) getTblObjectHistory().getModel()).setColumnCount(0);
+
+        ResultSetMetaData rsMd = null;
+        int columns = 0;
+        try {
+            rsMd = (ResultSetMetaData) rs.getMetaData();
+            columns = rsMd.getColumnCount();
+
+            for (int i = 1; i <= columns; i++) {
+                ((DefaultTableModel) getTblObjectHistory().getModel()).addColumn(getColumnName(rsMd.getColumnName(i)));
+            }
+        } catch (SQLException ex) {
+            LOGGER.info(new StringBuilder("Falha na adição das colunas ao objeto de tabela: ").append(ex).toString());
+        }
+
+        try {
+            while (rs.next()) {
+                Object[] row = new Object[columns];
+                for (int i = 1; i <= columns; i++) {
+                    row[i - 1] = rs.getObject(i);
+                }
+
+                ((DefaultTableModel) getTblObjectHistory().getModel()).insertRow(rs.getRow() - 1, row);
+            }
+        } catch (SQLException ex) {
+            LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
+        }
+        if (selectFirstRow) {
+            getTblObjectHistory().getSelectionModel().setSelectionInterval(0, 0);
         }
     }
 
@@ -460,6 +560,10 @@ public class DictionaryFrame extends javax.swing.JFrame {
         return tblObjects;
     }
 
+    public JTable getTblObjectHistory() {
+        return tblObjectHistory;
+    }
+
     public String getSelectedCard() {
         return selectedCard;
     }
@@ -520,4 +624,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         return txtareaSQL;
     }
 
+    public JTabbedPane getTbdpanelMain() {
+        return tbdpanelMain;
+    }
 }
