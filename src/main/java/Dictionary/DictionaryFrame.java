@@ -24,6 +24,8 @@ import javax.swing.JTextField;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 /**
  *
@@ -110,6 +112,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblObjects.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         scrpnlGrid.setViewportView(tblObjects);
 
         pnlGridView.add(scrpnlGrid, java.awt.BorderLayout.CENTER);
@@ -256,7 +259,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         pnlButtonsLayout.setVerticalGroup(
             pnlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonsLayout.createSequentialGroup()
-                .addContainerGap(281, Short.MAX_VALUE)
+                .addContainerGap(364, Short.MAX_VALUE)
                 .addComponent(btnNew)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSave)
@@ -446,8 +449,17 @@ public class DictionaryFrame extends javax.swing.JFrame {
             LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
         }
         getTblObjects().removeColumn(getTblObjects().getColumnModel().getColumn(3));
+        adjustObjectTableColumns();
         if (selectFirstRow) {
             getTblObjects().getSelectionModel().setSelectionInterval(0, 0);
+        }
+    }
+
+    private void adjustObjectTableColumns() {
+        TableColumnModel columnModel = getTblObjects().getColumnModel();
+        for (int i = 0; i < columnModel.getColumnCount(); i++) {
+            int width = String.valueOf(columnModel.getColumn(i).getHeaderValue()).length();
+            columnModel.getColumn(i).setPreferredWidth(width*10);
         }
     }
 
