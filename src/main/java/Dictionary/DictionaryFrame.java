@@ -8,6 +8,9 @@ package Dictionary;
 import Database.DAO;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
+import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
@@ -17,6 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -24,8 +28,8 @@ import javax.swing.JTextField;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import sun.java2d.SunGraphicsEnvironment;
 
 /**
  *
@@ -79,6 +83,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         scrpnlDetail = new javax.swing.JScrollPane();
         txtareaSQL = new javax.swing.JTextArea();
         pnlHistory = new javax.swing.JPanel();
+        pnlObjectHistory = new javax.swing.JPanel();
         scrpnlHistoryGrid = new javax.swing.JScrollPane();
         tblObjectHistory = new javax.swing.JTable();
         scrpnlHistoryContent = new javax.swing.JScrollPane();
@@ -173,6 +178,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
         pnlHistory.setLayout(new java.awt.BorderLayout());
 
+        pnlObjectHistory.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 5, 1));
+        pnlObjectHistory.setLayout(new java.awt.BorderLayout());
+
         tblObjectHistory.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -184,15 +192,18 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblObjectHistory.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         scrpnlHistoryGrid.setViewportView(tblObjectHistory);
 
-        pnlHistory.add(scrpnlHistoryGrid, java.awt.BorderLayout.NORTH);
+        pnlObjectHistory.add(scrpnlHistoryGrid, java.awt.BorderLayout.CENTER);
 
         txtareaHistoryContent.setColumns(20);
         txtareaHistoryContent.setRows(5);
         scrpnlHistoryContent.setViewportView(txtareaHistoryContent);
 
-        pnlHistory.add(scrpnlHistoryContent, java.awt.BorderLayout.CENTER);
+        pnlObjectHistory.add(scrpnlHistoryContent, java.awt.BorderLayout.SOUTH);
+
+        pnlHistory.add(pnlObjectHistory, java.awt.BorderLayout.CENTER);
 
         tbdpanelMain.addTab("Histórico", pnlHistory);
 
@@ -303,6 +314,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
             getBtnDetail().setEnabled(true);
             getBtnDelete().setEnabled(true);
             fillObjectsTable(false);
+            int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
+            getTblObjects().setRowSelectionInterval(lastRow, lastRow);
+            fillFieldsFromObject();
             enabledAllFields(false);
         }
     }//GEN-LAST:event_btnSaveActionPerformed
@@ -337,6 +351,8 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 changeCard();
             }
             fillObjectsTable();
+            int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
+            getTblObjects().setRowSelectionInterval(lastRow, lastRow);
             getBtnDetail().setEnabled(getTblObjects().getRowCount() > 0);
             getBtnDelete().setEnabled(getTblObjects().getRowCount() > 0);
         }
@@ -360,6 +376,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private javax.swing.JPanel pnlHistory;
     private javax.swing.JPanel pnlInformation;
     private javax.swing.JPanel pnlMain;
+    private javax.swing.JPanel pnlObjectHistory;
     private javax.swing.JPanel pnlSQL;
     private javax.swing.JPanel pnlSQLInformation;
     private javax.swing.JScrollPane scrpnlDetail;
@@ -383,7 +400,10 @@ public class DictionaryFrame extends javax.swing.JFrame {
             if (e.getSource() instanceof JTabbedPane) {
                 JTabbedPane selectedPane = (JTabbedPane) e.getSource();
                 if (1 == selectedPane.getSelectedIndex()) {
-                    fillHistoryTable();
+                    getScrpnlHistoryContent().setPreferredSize(new Dimension(getDicFrame().getWidth(), 500));
+                    fillHistoryTable(true);
+                    getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getValueAt(getTblObjectHistory().getSelectedRow(), 1)));
+                    getTblObjectHistory().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
                 }
             }
         });
@@ -396,7 +416,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
         getDicFrame().setLocationRelativeTo(null);
         getDicFrame().setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         getDicFrame().setResizable(false);
-        getDicFrame().setExtendedState(JFrame.MAXIMIZED_BOTH);
+        Rectangle usableBounds = SunGraphicsEnvironment.getUsableBounds(getDicFrame().getGraphicsConfiguration().getDevice());
+        setMaximizedBounds(usableBounds);
+        setExtendedState(MAXIMIZED_BOTH);
         getDicFrame().addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -449,17 +471,16 @@ public class DictionaryFrame extends javax.swing.JFrame {
             LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
         }
         getTblObjects().removeColumn(getTblObjects().getColumnModel().getColumn(3));
-        adjustObjectTableColumns();
+        adjustTableColumns(getTblObjects().getColumnModel());
         if (selectFirstRow) {
             getTblObjects().getSelectionModel().setSelectionInterval(0, 0);
         }
     }
 
-    private void adjustObjectTableColumns() {
-        TableColumnModel columnModel = getTblObjects().getColumnModel();
+    private void adjustTableColumns(TableColumnModel columnModel) {
         for (int i = 0; i < columnModel.getColumnCount(); i++) {
             int width = String.valueOf(columnModel.getColumn(i).getHeaderValue()).length();
-            columnModel.getColumn(i).setPreferredWidth(width*10);
+            columnModel.getColumn(i).setPreferredWidth(width * 10);
         }
     }
 
@@ -500,6 +521,10 @@ public class DictionaryFrame extends javax.swing.JFrame {
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
         }
+        getTblObjectHistory().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
+        getTblObjectHistory().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
+        getTblObjectHistory().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
+        adjustTableColumns(getTblObjectHistory().getColumnModel());
         if (selectFirstRow) {
             getTblObjectHistory().getSelectionModel().setSelectionInterval(0, 0);
         }
@@ -638,5 +663,13 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
     public JTabbedPane getTbdpanelMain() {
         return tbdpanelMain;
+    }
+
+    public JTextArea getTxtareaHistoryContent() {
+        return txtareaHistoryContent;
+    }
+
+    public JScrollPane getScrpnlHistoryContent() {
+        return scrpnlHistoryContent;
     }
 }
