@@ -23,6 +23,11 @@ public class Const {
         SELECT_ALL_DICTIONARY(
                 "SELECT * "
                 + "FROM dictionary;"),
+        SELECT_ALL_DICTIONARY_HISTORY(
+                "SELECT * \n"
+                + "FROM dictionary_history \n"
+                + "WHERE nr_seq_object = ? \n"
+                + "ORDER BY dt_insertion DESC;"),
         INSERT_USER("INSERT INTO application_user \n"
                 + "(username, saltpass, interations, keylength, userpassword) \n"
                 + "values (?, ?, ?, ?, ?);"),
