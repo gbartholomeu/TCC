@@ -35,7 +35,10 @@ public class Const {
                 + "(ds_name, ie_type, ds_content, dt_insertion, nm_user) \n"
                 + "values (?, ?, ?, SYSDATE(), ?);"),
         DELETE_OBJECT("DELETE FROM dictionary \n"
-                + " WHERE nr_sequence = ?;");
+                + " WHERE nr_sequence = ?;"),
+        SELECT_OBJECT_TYPES("SELECT ds_object_type \n"
+                + "FROM objects_types \n"
+                + "ORDER BY cd_object_type;");
 
         private final String SQLCode;
 

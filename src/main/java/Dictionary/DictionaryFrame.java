@@ -9,14 +9,19 @@ import Database.DAO;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.GraphicsConfiguration;
+import java.awt.EventQueue;
 import java.awt.Rectangle;
+import java.awt.event.ItemEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -25,6 +30,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
@@ -74,6 +80,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         lblObjectName = new javax.swing.JLabel();
         txtObjectName = new javax.swing.JTextField();
         lblObjectType = new javax.swing.JLabel();
+        cmbBoxObjectType = new javax.swing.JComboBox<>();
         txtObjectType = new javax.swing.JTextField();
         lblObjectDate = new javax.swing.JLabel();
         txtObjectDate = new javax.swing.JTextField();
@@ -139,6 +146,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
         lblObjectType.setText("Tipo objeto: ");
         pnlSQLInformation.add(lblObjectType);
+
+        cmbBoxObjectType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        pnlSQLInformation.add(cmbBoxObjectType);
 
         txtObjectType.setEnabled(false);
         txtObjectType.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -296,6 +306,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         getBtnUndo().setEnabled(true);
         getBtnDetail().setEnabled(false);
         getBtnDelete().setEnabled(false);
+        loadObjectTypeComboBox();
         fillFieldsEmptyText();
         enabledAllFields(true);
         if ("cardGrid".equalsIgnoreCase(selectedCard)) {
@@ -304,7 +315,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNewActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        int insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), getTxtObjectType().getText(), getTxtAreaSQL().getText(), "gabriel"/*getUsuarioAtivo()*/);
+        int insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), getCmbBoxObjectType().getItemAt(getCmbBoxObjectType().getSelectedIndex()), getTxtAreaSQL().getText(), "gabriel"/*getUsuarioAtivo()*/);
         if (insertDatabase == 0) {
             JOptionPane.showMessageDialog(this, "Falha ao adicionar objeto");
         } else {
@@ -339,6 +350,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         }
         changeCard();
         fillFieldsFromObject();
+        loadObjectTypeComboBox(true);
         enabledAllFields(false);
     }//GEN-LAST:event_btnDetailActionPerformed
 
@@ -365,6 +377,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnNew;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnUndo;
+    private javax.swing.JComboBox<String> cmbBoxObjectType;
     private javax.swing.JLabel lblObjectDate;
     private javax.swing.JLabel lblObjectName;
     private javax.swing.JLabel lblObjectType;
@@ -560,9 +573,47 @@ public class DictionaryFrame extends javax.swing.JFrame {
         getCardLayout().show(getPnlGrid(), selectedCard);
     }
 
+    private void loadObjectTypeComboBox() {
+        loadObjectTypeComboBox(false);
+    }
+
+    private void loadObjectTypeComboBox(boolean selectRecord) {
+        String selectType = "";
+        if (selectRecord && getCmbBoxObjectType().getSelectedItem() != null) {
+            selectType = String.valueOf(getCmbBoxObjectType().getSelectedItem());
+        }
+        ResultSet objectTypes = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_OBJECT_TYPES.getSqlCode());
+        DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
+        List<String> types = new ArrayList<>();
+        try {
+            while (objectTypes.next()) {
+                types.add(objectTypes.getString("ds_object_type"));
+            }
+        } catch (SQLException ex) {
+            LOGGER.info(new StringBuilder().append("Falha na obtenção dos tipos de objeto do banco: ").append(ex).toString());
+        }
+        for (final String i : types) {
+            EventQueue.invokeLater(() -> {
+                comboBoxModel.addElement(i);
+            });
+        }
+        getCmbBoxObjectType().setModel(comboBoxModel);
+        if (selectRecord) {
+            final String selectTypeW = selectType;
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    getCmbBoxObjectType().setSelectedItem(selectTypeW);
+                }
+            });
+
+        }
+    }
+
     private void fillFieldsEmptyText() {
         String str = "";
         getTxtObjectName().setText(str);
+        getCmbBoxObjectType().setSelectedItem(null);
         getTxtObjectType().setText(str);
         getTxtObjectDate().setText(str);
         getTxtObjectUser().setText(str);
@@ -574,7 +625,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 1));
         getTxtObjectName().setText(str);
         str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 2));
-        getTxtObjectType().setText(str);
+        getCmbBoxObjectType().setSelectedItem(String.valueOf(str));
         str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 3));
         getTxtAreaSQL().setText(str);
         str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 4));
@@ -585,7 +636,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
     private void enabledAllFields(boolean enabled) {
         getTxtObjectName().setEnabled(enabled);
-        getTxtObjectType().setEnabled(enabled);
+        getCmbBoxObjectType().setEnabled(enabled);
         getTxtAreaSQL().setEnabled(enabled);
     }
 
@@ -671,5 +722,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
     public JScrollPane getScrpnlHistoryContent() {
         return scrpnlHistoryContent;
+    }
+
+    public JComboBox<String> getCmbBoxObjectType() {
+        return cmbBoxObjectType;
     }
 }
