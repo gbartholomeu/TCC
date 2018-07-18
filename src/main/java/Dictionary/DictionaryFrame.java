@@ -6,6 +6,8 @@
 package Dictionary;
 
 import Database.DAO;
+import Users.UserFrame;
+import Users.UserInstance;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -23,6 +25,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -89,6 +92,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         pnlSQL = new javax.swing.JPanel();
         scrpnlDetail = new javax.swing.JScrollPane();
         txtareaSQL = new javax.swing.JTextArea();
+        jToolBar1 = new javax.swing.JToolBar();
         pnlHistory = new javax.swing.JPanel();
         pnlObjectHistory = new javax.swing.JPanel();
         scrpnlHistoryGrid = new javax.swing.JScrollPane();
@@ -101,6 +105,10 @@ public class DictionaryFrame extends javax.swing.JFrame {
         btnUndo = new javax.swing.JButton();
         btnDetail = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
+        menuBar = new javax.swing.JMenuBar();
+        menuUser = new javax.swing.JMenu();
+        menuItemUser = new javax.swing.JMenuItem();
+        menuPassword = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("frmDictionary"); // NOI18N
@@ -179,6 +187,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
         scrpnlDetail.setViewportView(txtareaSQL);
 
         pnlSQL.add(scrpnlDetail, java.awt.BorderLayout.CENTER);
+
+        jToolBar1.setRollover(true);
+        pnlSQL.add(jToolBar1, java.awt.BorderLayout.PAGE_START);
 
         pnlDetailView.add(pnlSQL, java.awt.BorderLayout.CENTER);
 
@@ -280,7 +291,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         pnlButtonsLayout.setVerticalGroup(
             pnlButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlButtonsLayout.createSequentialGroup()
-                .addContainerGap(364, Short.MAX_VALUE)
+                .addContainerGap(343, Short.MAX_VALUE)
                 .addComponent(btnNew)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSave)
@@ -296,6 +307,23 @@ public class DictionaryFrame extends javax.swing.JFrame {
         pnlMain.add(pnlButtons, java.awt.BorderLayout.EAST);
 
         getContentPane().add(pnlMain, java.awt.BorderLayout.CENTER);
+
+        menuUser.setText("Usuários");
+
+        menuItemUser.setText("Usuários");
+        menuItemUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemUserActionPerformed(evt);
+            }
+        });
+        menuUser.add(menuItemUser);
+
+        menuPassword.setText("Trocar senha");
+        menuUser.add(menuPassword);
+
+        menuBar.add(menuUser);
+
+        setJMenuBar(menuBar);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -315,7 +343,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNewActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        int insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), getCmbBoxObjectType().getItemAt(getCmbBoxObjectType().getSelectedIndex()), getTxtAreaSQL().getText(), "gabriel"/*getUsuarioAtivo()*/);
+        int insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), getCmbBoxObjectType().getItemAt(getCmbBoxObjectType().getSelectedIndex()), getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo());
         if (insertDatabase == 0) {
             JOptionPane.showMessageDialog(this, "Falha ao adicionar objeto");
         } else {
@@ -371,6 +399,13 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnDeleteActionPerformed
 
+    private void menuItemUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemUserActionPerformed
+        UserFrame userFr = new UserFrame(getDicFrame());
+        SwingUtilities.invokeLater(() -> (userFr.setConfiguration()));
+        userFr.setVisible(true);
+        getDicFrame().setVisible(false);
+    }//GEN-LAST:event_menuItemUserActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnDetail;
@@ -378,10 +413,15 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnUndo;
     private javax.swing.JComboBox<String> cmbBoxObjectType;
+    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel lblObjectDate;
     private javax.swing.JLabel lblObjectName;
     private javax.swing.JLabel lblObjectType;
     private javax.swing.JLabel lblObjectUser;
+    private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenuItem menuItemUser;
+    private javax.swing.JMenuItem menuPassword;
+    private javax.swing.JMenu menuUser;
     private javax.swing.JPanel pnlButtons;
     private javax.swing.JPanel pnlDetailView;
     private javax.swing.JPanel pnlGrid;
@@ -439,6 +479,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 parentFrame.dispose();
             }
         });
+        getMenuItemUser().setVisible(UserInstance.getInstance().isAdmin());
     }
 
     private void setButtonsConfiguration() {
@@ -727,4 +768,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
     public JComboBox<String> getCmbBoxObjectType() {
         return cmbBoxObjectType;
     }
+
+    public JMenuItem getMenuItemUser() {
+        return menuItemUser;
+    }
+
 }

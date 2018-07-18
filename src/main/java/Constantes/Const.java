@@ -17,7 +17,8 @@ public class Const {
                 + "       saltpass SALT,"
                 + "       interations INTERA, \n"
                 + "       keylength KEYL, \n"
-                + "       userpassword PASS \n"
+                + "       userpassword PASS \n,"
+                + "       isAdmin  \n"
                 + "FROM application_user \n"
                 + "WHERE username = ?;"),
         SELECT_ALL_DICTIONARY(
@@ -38,7 +39,10 @@ public class Const {
                 + " WHERE nr_sequence = ?;"),
         SELECT_OBJECT_TYPES("SELECT ds_object_type \n"
                 + "FROM objects_types \n"
-                + "ORDER BY cd_object_type;");
+                + "ORDER BY cd_object_type;"),
+        SELECT_ALL_USERS("SELECT username, fullname, isAdmin \n"
+                + "FROM application_user \n"
+                + "ORDER BY fullname;");
 
         private final String SQLCode;
 

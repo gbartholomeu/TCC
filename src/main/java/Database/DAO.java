@@ -102,7 +102,7 @@ public class DAO {
             printQuery();
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha ao executar INSERT na base: ").append(ex).toString());
+            LOGGER.info(new StringBuilder("Falha ao executar DELETE na base: ").append(ex).toString());
         }
         return updateReturn;
     }

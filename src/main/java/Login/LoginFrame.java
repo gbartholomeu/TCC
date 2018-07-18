@@ -8,6 +8,7 @@ package Login;
 import Constantes.Const;
 import Database.DAO;
 import Dictionary.DictionaryFrame;
+import Users.UserInstance;
 import Utils.Cryptography;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -139,36 +140,43 @@ public class LoginFrame extends javax.swing.JFrame {
         int interations = 1;
         int key = 1;
         byte[] password = null;
+        int isAdmin = 0;
+        if (!"".equalsIgnoreCase(getTxtUser().getText().trim())) {
 
-        ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), txtUser.getText());
-        try {
-            while (rs.next()) {
-                retorno = rs.getString("QTD");
+            ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), getTxtUser().getText());
+            try {
+                while (rs.next()) {
+                    retorno = rs.getString("QTD");
 
-                salt = rs.getBytes("SALT");
-                interations = rs.getInt("INTERA");
-                key = rs.getInt("KEYL");
-                password = rs.getBytes("PASS");
+                    salt = rs.getBytes("SALT");
+                    interations = rs.getInt("INTERA");
+                    key = rs.getInt("KEYL");
+                    password = rs.getBytes("PASS");
+                    isAdmin = rs.getInt("isAdmin");
+                }
+            } catch (SQLException ex) {
+                LOGGER.info(new StringBuilder().append("Falha na obtenção das configurações do usuário: ").append(ex).toString());
             }
-        } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder().append("Falha na obtenção das configurações do usuário: ").append(ex).toString());
-        }
 
-        if ("1".equalsIgnoreCase(retorno)) {
-            String passwordField = new String(txtPassw.getPassword());
-            byte[] hash = Cryptography.getEncryptedPassword(passwordField, salt, interations, key);
-            if (Arrays.equals(hash, password)) {
-                DictionaryFrame dic = new DictionaryFrame(getLoginFrame());
-                SwingUtilities.invokeLater(() -> (dic.setConfiguration()));
-                dic.setVisible(true);
-                getLoginFrame().setVisible(false);
+            if ("1".equalsIgnoreCase(retorno)) {
+                String passwordField = new String(getTxtPassw().getPassword());
+                byte[] hash = Cryptography.getEncryptedPassword(passwordField, salt, interations, key);
+                if (Arrays.equals(hash, password)) {
+                    UserInstance.setUsuarioAtivo(getTxtUser().getText());
+                    UserInstance.getInstance().setIsAdmin(isAdmin == 1);
+                    DictionaryFrame dic = new DictionaryFrame(getLoginFrame());
+                    SwingUtilities.invokeLater(() -> (dic.setConfiguration()));
+                    dic.setVisible(true);
+                    getLoginFrame().setVisible(false);
+                } else {
+                    JOptionPane.showMessageDialog(loginInstance, "Senha incorreta");
+                }
             } else {
-                JOptionPane.showMessageDialog(loginInstance, "Senha incorreta");
+                JOptionPane.showMessageDialog(loginInstance, "Usuário não existe");
             }
         } else {
-            JOptionPane.showMessageDialog(loginInstance, "Usuário não existe");
+            JOptionPane.showMessageDialog(loginInstance, "Por favor insira um usuário");
         }
-
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
