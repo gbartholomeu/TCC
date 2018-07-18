@@ -79,6 +79,34 @@ public class DAO {
         return updateReturn;
     }
 
+    public static int updateRegisterDatabase(String sql, Object... args) {
+        int updateReturn = 0;
+        try {
+            con = DbConnection.getConnection();
+            stmt = con.prepareStatement(sql);
+            if (args != null && args.length > 0) {
+                for (int i = 0; i < args.length; i++) {
+                    if (args[i] != null) {
+                        if (args[i] instanceof String) {
+                            stmt.setString((i + 1), String.valueOf(args[i]));
+                        } else if (args[i] instanceof Integer) {
+                            stmt.setInt((i + 1), Integer.parseInt(String.valueOf(args[i])));
+                        } else if (args[i] instanceof Date) {
+                            stmt.setDate((i + 1), Date.valueOf(String.valueOf(args[i])));
+                        } else if (args[i] instanceof byte[]) {
+                            stmt.setBytes((i + 1), (byte[]) args[i]);
+                        }
+                    }
+                }
+            }
+            printQuery();
+            updateReturn = stmt.executeUpdate();
+        } catch (SQLException ex) {
+            LOGGER.info(new StringBuilder("Falha ao executar UPDATE na base: ").append(ex).toString());
+        }
+        return updateReturn;
+    }
+
     public static int deleteFromDatabase(String sql, Object... args) {
         int updateReturn = 0;
         try {

@@ -28,13 +28,16 @@ public class Const {
                 "SELECT * \n"
                 + "FROM dictionary_history \n"
                 + "WHERE nr_seq_object = ? \n"
-                + "ORDER BY dt_insertion DESC;"),
+                + "ORDER BY nr_sequence DESC;"),
         INSERT_USER("INSERT INTO application_user \n"
                 + "(username, saltpass, interations, keylength, userpassword) \n"
                 + "values (?, ?, ?, ?, ?);"),
         INSERT_OBJECT("INSERT INTO dictionary \n"
                 + "(ds_name, ie_type, ds_content, dt_insertion, nm_user) \n"
                 + "values (?, ?, ?, SYSDATE(), ?);"),
+        UPDATE_OBJECT("UPDATE dictionary \n"
+                + "SET ds_name = ?, ie_type =?, ds_content = ?, nm_user = ?"
+                + "WHERE nr_sequence = ? \n"),
         DELETE_OBJECT("DELETE FROM dictionary \n"
                 + " WHERE nr_sequence = ?;"),
         SELECT_OBJECT_TYPES("SELECT ds_object_type \n"
@@ -42,7 +45,10 @@ public class Const {
                 + "ORDER BY cd_object_type;"),
         SELECT_ALL_USERS("SELECT username, fullname, isAdmin \n"
                 + "FROM application_user \n"
-                + "ORDER BY fullname;");
+                + "ORDER BY fullname;"),
+        UPDATE_OBJECT_FLAG("UPDATE dictionary \n"
+                + "SET isActive = ? \n"
+                + "WHERE nr_sequence = ?;");
 
         private final String SQLCode;
 
