@@ -342,7 +342,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         getBtnSave().setEnabled(true);
         getBtnUndo().setEnabled(true);
         getBtnDetail().setEnabled(false);
-        getBtnDelete().setEnabled(false);
+        getBtnInactivate().setEnabled(false);
         loadObjectTypeComboBox();
         fillFieldsEmptyText();
         enabledAllFields(true);
@@ -362,7 +362,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 getBtnSave().setEnabled(false);
                 getBtnUndo().setEnabled(false);
                 getBtnDetail().setEnabled(true);
-                getBtnDelete().setEnabled(true);
+                getBtnInactivate().setEnabled(true);
                 fillObjectsTable(false);
                 int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
                 getTblObjects().setRowSelectionInterval(lastRow, lastRow);
@@ -378,7 +378,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
 //                getBtnSave().setEnabled(false);
 //                getBtnUndo().setEnabled(false);
 //                getBtnDetail().setEnabled(true);
-//                getBtnDelete().setEnabled(true);
+//                getBtnInactivate().setEnabled(true);
 //                fillObjectsTable(false);
 //                int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
 //                getTblObjects().setRowSelectionInterval(lastRow, lastRow);
@@ -394,7 +394,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         //getBtnSave().setEnabled(false);
         //getBtnUndo().setEnabled(false);
         getBtnDetail().setEnabled(getTblObjects().getRowCount() > 0);
-        getBtnDelete().setEnabled(getTblObjects().getRowCount() > 0);
+        getBtnInactivate().setEnabled(getTblObjects().getRowCount() > 0);
         changeCard();
         //enabledAllFields(false);
     }//GEN-LAST:event_btnUndoActionPerformed
@@ -425,7 +425,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
             int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
             getTblObjects().setRowSelectionInterval(lastRow, lastRow);
             getBtnDetail().setEnabled(getTblObjects().getRowCount() > 0);
-            getBtnDelete().setEnabled(getTblObjects().getRowCount() > 0);
+            getBtnInactivate().setEnabled(getTblObjects().getRowCount() > 0);
         }*/
         int ieConfrma = JOptionPane.showConfirmDialog(getDicFrame(), "Deseja inativar o objeto " + getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 1) + "?", "", JOptionPane.YES_NO_OPTION);
 
@@ -441,7 +441,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
                 getTblObjects().setRowSelectionInterval(lastRow, lastRow);
                 getBtnDetail().setEnabled(getTblObjects().getRowCount() > 0);
-                getBtnDelete().setEnabled(getTblObjects().getRowCount() > 0);
+                getBtnInactivate().setEnabled(getTblObjects().getRowCount() > 0);
             }
         }
     }//GEN-LAST:event_btnInactivateActionPerformed
@@ -505,12 +505,21 @@ public class DictionaryFrame extends javax.swing.JFrame {
                     getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getValueAt(getTblObjectHistory().getSelectedRow(), 1)));
                     getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
                 }
+                getBtnNew().setEnabled(0 == selectedPane.getSelectedIndex());
+                getBtnDetail().setEnabled(0 == selectedPane.getSelectedIndex());
+                getBtnInactivate().setEnabled(0 == selectedPane.getSelectedIndex());
             }
         });
+
         getTblObjectHistory().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 4)));
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 4)));
+                    }
+                });
             }
         });
         fillObjectsTable();
@@ -537,7 +546,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
     private void setButtonsConfiguration() {
         getBtnDetail().setEnabled(getTblObjects().getRowCount() > 0);
-        getBtnDelete().setEnabled(getTblObjects().getRowCount() > 0);
+        getBtnInactivate().setEnabled(getTblObjects().getRowCount() > 0);
     }
 
     private void fillObjectsTable() {
@@ -783,7 +792,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         return btnUndo;
     }
 
-    public JButton getBtnDelete() {
+    public JButton getBtnInactivate() {
         return btnInactivate;
     }
 
