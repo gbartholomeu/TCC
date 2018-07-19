@@ -5,6 +5,9 @@
  */
 package Users;
 
+import Constantes.Const;
+import Database.DAO;
+import Utils.Cryptography;
 import static java.awt.Frame.MAXIMIZED_BOTH;
 import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
@@ -12,6 +15,9 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import sun.java2d.SunGraphicsEnvironment;
+import java.util.Random;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 
 /**
  *
@@ -40,7 +46,7 @@ public class UserNewPassword extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jPasswordField1 = new javax.swing.JPasswordField();
+        txtPassw = new javax.swing.JPasswordField();
         jLabel2 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         btnOk = new javax.swing.JButton();
@@ -60,7 +66,7 @@ public class UserNewPassword extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtPassw, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(19, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -69,7 +75,7 @@ public class UserNewPassword extends javax.swing.JFrame {
                 .addGap(14, 14, 14)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtPassw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -118,11 +124,23 @@ public class UserNewPassword extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-        // TODO add your handling code here:
+        Random r = new Random();
+        byte[] salt = Cryptography.getSecuredByte();
+        int interations = r.nextInt(10) + 1;
+        int keyLength = r.nextInt(10) + 1;
+        byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, keyLength, new String(getTxtPassw().getPassword()));
+        int retorno = DAO.insertIntoDatabase(Const.SQL.UPDATE_USER.getSqlCode(), salt, interations, keyLength, senhaCriptografia, UserInstance.getUsuarioAtivo());
+
+        if (retorno == 0) {
+            JOptionPane.showMessageDialog(this, "Usuário não cadastrado");
+        } else {
+            JOptionPane.showMessageDialog(this, "Senha alterada com sucesso");
+        }
+
     }//GEN-LAST:event_btnOkActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        // TODO add your handling code here:
+        getUserPassFrame().dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
 
     public void setConfiguration() {
@@ -144,10 +162,14 @@ public class UserNewPassword extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JPasswordField txtPassw;
     // End of variables declaration//GEN-END:variables
 
     public UserNewPassword getUserPassFrame() {
         return this;
+    }
+
+    public JPasswordField getTxtPassw() {
+        return txtPassw;
     }
 }

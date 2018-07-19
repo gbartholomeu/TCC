@@ -32,6 +32,9 @@ public class Const {
         INSERT_USER("INSERT INTO application_user \n"
                 + "(username, saltpass, interations, keylength, userpassword) \n"
                 + "values (?, ?, ?, ?, ?);"),
+        UPDATE_USER("UPDATE application_user \n"
+                + "set saltpass = ?, interations = ?, keylength = ?, userpassword = ? \n"
+                + "WHERE username = ?;"),
         INSERT_OBJECT("INSERT INTO dictionary \n"
                 + "(ds_name, ie_type, ds_content, dt_insertion, nm_user) \n"
                 + "values (?, ?, ?, SYSDATE(), ?);"),
