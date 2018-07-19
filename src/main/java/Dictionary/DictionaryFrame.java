@@ -8,12 +8,12 @@ package Dictionary;
 import Database.DAO;
 import Users.UserFrame;
 import Users.UserInstance;
+import Users.UserNewPassword;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
-import java.awt.event.ItemEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
@@ -36,13 +36,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.plaf.basic.BasicListUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import sun.java2d.SunGraphicsEnvironment;
@@ -328,6 +323,11 @@ public class DictionaryFrame extends javax.swing.JFrame {
         menuUser.add(menuItemUser);
 
         menuPassword.setText("Trocar senha");
+        menuPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuPasswordActionPerformed(evt);
+            }
+        });
         menuUser.add(menuPassword);
 
         menuBar.add(menuUser);
@@ -452,6 +452,12 @@ public class DictionaryFrame extends javax.swing.JFrame {
         userFr.setVisible(true);
         getDicFrame().setVisible(false);
     }//GEN-LAST:event_menuItemUserActionPerformed
+
+    private void menuPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPasswordActionPerformed
+        UserNewPassword userPass = new UserNewPassword(getDicFrame());
+        SwingUtilities.invokeLater(() -> (userPass.setConfiguration()));
+        userPass.setVisible(true);
+    }//GEN-LAST:event_menuPasswordActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDetail;
