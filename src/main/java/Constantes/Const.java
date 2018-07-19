@@ -30,8 +30,8 @@ public class Const {
                 + "WHERE nr_seq_object = ? \n"
                 + "ORDER BY nr_sequence DESC;"),
         INSERT_USER("INSERT INTO application_user \n"
-                + "(username, saltpass, interations, keylength, userpassword) \n"
-                + "values (?, ?, ?, ?, ?);"),
+                + "(username,fullname, saltpass, interations, keylength, userpassword, isAdmin) \n"
+                + "values (?, ?, ?, ?, ?, ?, ?);"),
         UPDATE_USER("UPDATE application_user \n"
                 + "set saltpass = ?, interations = ?, keylength = ?, userpassword = ? \n"
                 + "WHERE username = ?;"),

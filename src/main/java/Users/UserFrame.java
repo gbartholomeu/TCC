@@ -8,8 +8,10 @@ package Users;
 import Database.DAO;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.awt.CardLayout;
+import java.awt.EventQueue;
 import static java.awt.Frame.MAXIMIZED_BOTH;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
@@ -61,7 +63,7 @@ public class UserFrame extends javax.swing.JFrame {
         });
     }
 
-    private void fillObjectsTable() {
+    public void fillObjectsTable() {
         fillObjectsTable(true);
     }
 
@@ -135,9 +137,19 @@ public class UserFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        popUpUser = new javax.swing.JPopupMenu();
+        popUpItemNewUser = new javax.swing.JMenuItem();
         pnlMain = new javax.swing.JPanel();
         scrpnlUser = new javax.swing.JScrollPane();
         tblUser = new javax.swing.JTable();
+
+        popUpItemNewUser.setText("Criar usuário");
+        popUpItemNewUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                popUpItemNewUserActionPerformed(evt);
+            }
+        });
+        popUpUser.add(popUpItemNewUser);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -155,6 +167,11 @@ public class UserFrame extends javax.swing.JFrame {
             }
         ));
         tblUser.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tblUser.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tblUserMouseReleased(evt);
+            }
+        });
         scrpnlUser.setViewportView(tblUser);
 
         pnlMain.add(scrpnlUser, java.awt.BorderLayout.CENTER);
@@ -164,9 +181,25 @@ public class UserFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void popUpItemNewUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_popUpItemNewUserActionPerformed
+        NewUserFrame newUser = new NewUserFrame(getUserFrame());
+        EventQueue.invokeLater(() -> {
+            newUser.setConfiguration();
+        });
+        newUser.setVisible(true);
+    }//GEN-LAST:event_popUpItemNewUserActionPerformed
+
+    private void tblUserMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblUserMouseReleased
+        if (evt.getButton() == MouseEvent.BUTTON3) {
+            popUpUser.show(this, evt.getX() + 20, evt.getY() + 20);
+        }
+    }//GEN-LAST:event_tblUserMouseReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel pnlMain;
+    private javax.swing.JMenuItem popUpItemNewUser;
+    private javax.swing.JPopupMenu popUpUser;
     private javax.swing.JScrollPane scrpnlUser;
     private javax.swing.JTable tblUser;
     // End of variables declaration//GEN-END:variables
