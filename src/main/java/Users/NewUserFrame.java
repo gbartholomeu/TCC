@@ -176,19 +176,45 @@ public class NewUserFrame extends javax.swing.JFrame {
 
     private void btnCreateNewUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateNewUserActionPerformed
         if (!"".equalsIgnoreCase(getTxtUser().getText().trim()) && !"".equalsIgnoreCase(new String(getTxtPassw().getPassword()).trim()) && !"".equalsIgnoreCase(getTxtFullname().getText().trim())) {
-            Random r = new Random();
-            byte[] salt = Cryptography.getSecuredByte();
-            int interations = r.nextInt(10) + 1;
-            int keyLength = r.nextInt(10) + 1;
-            byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, keyLength, new String(getTxtPassw().getPassword()));
-            int retorno = DAO.insertIntoDatabase(Const.SQL.INSERT_USER.getSqlCode(), getTxtUser().getText(), getTxtFullname().getText(), salt, interations, keyLength, senhaCriptografia, getCheckBoxAdmin().isSelected() ? 1 : 0);
-            if (retorno == 0) {
-                JOptionPane.showMessageDialog(this, "Usuário não cadastrado");
-            } else {
-                JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso.");
-                this.dispose();
-                ((UserFrame) parentFrame).fillObjectsTable();
+            String retorno = "";
+            byte[] salt = null;
+            int interations = 1;
+            int key = 1;
+            byte[] password = null;
+            int isAdmin = 0;
+            ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), getTxtUser().getText());
+            try {
+                while (rs.next()) {
+                    retorno = rs.getString("QTD");
+
+                    salt = rs.getBytes("SALT");
+                    interations = rs.getInt("INTERA");
+                    key = rs.getInt("KEYL");
+                    password = rs.getBytes("PASS");
+                    isAdmin = rs.getInt("isAdmin");
+                }
+            } catch (SQLException ex) {
+                LOGGER.info(new StringBuilder().append("Falha na obtenção das configurações do usuário: ").append(ex).toString());
             }
+
+            if ("1".equalsIgnoreCase(retorno)) {
+                JOptionPane.showMessageDialog(this, "Usuário já cadastrado");
+            } else {
+                Random r = new Random();
+                salt = Cryptography.getSecuredByte();
+                interations = r.nextInt(10) + 1;
+                int keyLength = r.nextInt(10) + 1;
+                byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, keyLength, new String(getTxtPassw().getPassword()));
+                int retornoInsert = DAO.insertIntoDatabase(Const.SQL.INSERT_USER.getSqlCode(), getTxtUser().getText(), getTxtFullname().getText(), salt, interations, keyLength, senhaCriptografia, getCheckBoxAdmin().isSelected() ? 1 : 0);
+                if (retornoInsert == 0) {
+                    JOptionPane.showMessageDialog(this, "Usuário não cadastrado");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso.");
+                    this.dispose();
+                    ((UserFrame) parentFrame).fillObjectsTable();
+                }
+            }
+
         } else {
             JOptionPane.showMessageDialog(this, "Existem campos não informados.");
         }

@@ -82,9 +82,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         auxJPM = new javax.swing.JPopupMenu();
-        createProcedureJMI = new javax.swing.JMenuItem();
-        createFunctionJMI = new javax.swing.JMenuItem();
-        createTriggerJMI = new javax.swing.JMenuItem();
+        createTemplateJMI = new javax.swing.JMenuItem();
         separador1JS = new javax.swing.JPopupMenu.Separator();
         insertIfJMI = new javax.swing.JMenuItem();
         insertIfElseJMI = new javax.swing.JMenuItem();
@@ -127,29 +125,13 @@ public class DictionaryFrame extends javax.swing.JFrame {
         menuItemUser = new javax.swing.JMenuItem();
         menuPassword = new javax.swing.JMenuItem();
 
-        createProcedureJMI.setText("Create procedure template");
-        createProcedureJMI.addActionListener(new java.awt.event.ActionListener() {
+        createTemplateJMI.setText("Create template");
+        createTemplateJMI.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                createProcedureJMIActionPerformed(evt);
+                createTemplateJMIActionPerformed(evt);
             }
         });
-        auxJPM.add(createProcedureJMI);
-
-        createFunctionJMI.setText("Create function template");
-        createFunctionJMI.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                createFunctionJMIActionPerformed(evt);
-            }
-        });
-        auxJPM.add(createFunctionJMI);
-
-        createTriggerJMI.setText("Create trigger template");
-        createTriggerJMI.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                createTriggerJMIActionPerformed(evt);
-            }
-        });
-        auxJPM.add(createTriggerJMI);
+        auxJPM.add(createTemplateJMI);
         auxJPM.add(separador1JS);
 
         insertIfJMI.setText("Insert clause IF");
@@ -507,17 +489,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
         getDicFrame().setVisible(false);
     }//GEN-LAST:event_menuItemUserActionPerformed
 
-    private void createProcedureJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createProcedureJMIActionPerformed
+    private void createTemplateJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createTemplateJMIActionPerformed
         callCreateTemplate();
-    }//GEN-LAST:event_createProcedureJMIActionPerformed
-
-    private void createFunctionJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createFunctionJMIActionPerformed
-        callCreateTemplate();
-    }//GEN-LAST:event_createFunctionJMIActionPerformed
-
-    private void createTriggerJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createTriggerJMIActionPerformed
-        callCreateTemplate();
-    }//GEN-LAST:event_createTriggerJMIActionPerformed
+    }//GEN-LAST:event_createTemplateJMIActionPerformed
 
     private void insertIfJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertIfJMIActionPerformed
         DictionaryFrameController.addIf(txtareaSQL);
@@ -556,9 +530,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnUndo;
     private javax.swing.JComboBox<String> cmbBoxObjectType;
-    private javax.swing.JMenuItem createFunctionJMI;
-    private javax.swing.JMenuItem createProcedureJMI;
-    private javax.swing.JMenuItem createTriggerJMI;
+    private javax.swing.JMenuItem createTemplateJMI;
     private javax.swing.JMenuItem insertIfElseJMI;
     private javax.swing.JMenuItem insertIfJMI;
     private javax.swing.JToolBar jToolBar1;
