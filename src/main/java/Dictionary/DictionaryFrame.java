@@ -8,12 +8,13 @@ package Dictionary;
 import Database.DAO;
 import Users.UserFrame;
 import Users.UserInstance;
-import Users.UserNewPassword;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
+import java.awt.event.ItemEvent;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
@@ -36,8 +37,13 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.plaf.basic.BasicListUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import sun.java2d.SunGraphicsEnvironment;
@@ -75,6 +81,13 @@ public class DictionaryFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        auxJPM = new javax.swing.JPopupMenu();
+        createProcedureJMI = new javax.swing.JMenuItem();
+        createFunctionJMI = new javax.swing.JMenuItem();
+        createTriggerJMI = new javax.swing.JMenuItem();
+        separador1JS = new javax.swing.JPopupMenu.Separator();
+        insertIfJMI = new javax.swing.JMenuItem();
+        insertIfElseJMI = new javax.swing.JMenuItem();
         pnlMain = new javax.swing.JPanel();
         tbdpanelMain = new javax.swing.JTabbedPane();
         pnlGrid = new javax.swing.JPanel();
@@ -113,6 +126,47 @@ public class DictionaryFrame extends javax.swing.JFrame {
         menuUser = new javax.swing.JMenu();
         menuItemUser = new javax.swing.JMenuItem();
         menuPassword = new javax.swing.JMenuItem();
+
+        createProcedureJMI.setText("Create procedure template");
+        createProcedureJMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createProcedureJMIActionPerformed(evt);
+            }
+        });
+        auxJPM.add(createProcedureJMI);
+
+        createFunctionJMI.setText("Create function template");
+        createFunctionJMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createFunctionJMIActionPerformed(evt);
+            }
+        });
+        auxJPM.add(createFunctionJMI);
+
+        createTriggerJMI.setText("Create trigger template");
+        createTriggerJMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createTriggerJMIActionPerformed(evt);
+            }
+        });
+        auxJPM.add(createTriggerJMI);
+        auxJPM.add(separador1JS);
+
+        insertIfJMI.setText("Insert clause IF");
+        insertIfJMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                insertIfJMIActionPerformed(evt);
+            }
+        });
+        auxJPM.add(insertIfJMI);
+
+        insertIfElseJMI.setText("Insert clause IF/ELSE");
+        insertIfElseJMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                insertIfElseJMIActionPerformed(evt);
+            }
+        });
+        auxJPM.add(insertIfElseJMI);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("frmDictionary"); // NOI18N
@@ -188,6 +242,11 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
         txtareaSQL.setColumns(20);
         txtareaSQL.setRows(5);
+        txtareaSQL.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                txtareaSQLMouseReleased(evt);
+            }
+        });
         scrpnlDetail.setViewportView(txtareaSQL);
 
         pnlSQL.add(scrpnlDetail, java.awt.BorderLayout.CENTER);
@@ -323,11 +382,6 @@ public class DictionaryFrame extends javax.swing.JFrame {
         menuUser.add(menuItemUser);
 
         menuPassword.setText("Trocar senha");
-        menuPassword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuPasswordActionPerformed(evt);
-            }
-        });
         menuUser.add(menuPassword);
 
         menuBar.add(menuUser);
@@ -453,19 +507,60 @@ public class DictionaryFrame extends javax.swing.JFrame {
         getDicFrame().setVisible(false);
     }//GEN-LAST:event_menuItemUserActionPerformed
 
-    private void menuPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPasswordActionPerformed
-        UserNewPassword userPass = new UserNewPassword(getDicFrame());
-        SwingUtilities.invokeLater(() -> (userPass.setConfiguration()));
-        userPass.setVisible(true);
-    }//GEN-LAST:event_menuPasswordActionPerformed
+    private void createProcedureJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createProcedureJMIActionPerformed
+        callCreateTemplate();
+    }//GEN-LAST:event_createProcedureJMIActionPerformed
 
+    private void createFunctionJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createFunctionJMIActionPerformed
+        callCreateTemplate();
+    }//GEN-LAST:event_createFunctionJMIActionPerformed
+
+    private void createTriggerJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createTriggerJMIActionPerformed
+        callCreateTemplate();
+    }//GEN-LAST:event_createTriggerJMIActionPerformed
+
+    private void insertIfJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertIfJMIActionPerformed
+        DictionaryFrameController.addIf(txtareaSQL);
+    }//GEN-LAST:event_insertIfJMIActionPerformed
+
+    private void insertIfElseJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertIfElseJMIActionPerformed
+        DictionaryFrameController.addIfElse(txtareaSQL);
+    }//GEN-LAST:event_insertIfElseJMIActionPerformed
+
+    private void txtareaSQLMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtareaSQLMouseReleased
+        if(evt.getButton()==MouseEvent.BUTTON3){
+            auxJPM.show(this, evt.getX() + 20, evt.getY() + 20);
+        }  
+    }//GEN-LAST:event_txtareaSQLMouseReleased
+
+    private void callCreateTemplate() {
+        txtareaSQL.append(DictionaryFrameController.getProcedureFunctionTriggerTemplate(txtObjectName.getText(), isProcedure(), isFunction(), isTrigger()));
+    }
+
+    private boolean isProcedure() {
+        return (Utils.Utilities.validaString(cmbBoxObjectType.getSelectedItem()).equalsIgnoreCase("PROCEDURE"));
+    }
+
+    private boolean isFunction() {
+        return (Utils.Utilities.validaString(cmbBoxObjectType.getSelectedItem()).equalsIgnoreCase("FUNCTION"));
+    }
+
+    private boolean isTrigger() {
+        return (Utils.Utilities.validaString(cmbBoxObjectType.getSelectedItem()).equalsIgnoreCase("TRIGGER"));
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPopupMenu auxJPM;
     private javax.swing.JButton btnDetail;
     private javax.swing.JButton btnInactivate;
     private javax.swing.JButton btnNew;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnUndo;
     private javax.swing.JComboBox<String> cmbBoxObjectType;
+    private javax.swing.JMenuItem createFunctionJMI;
+    private javax.swing.JMenuItem createProcedureJMI;
+    private javax.swing.JMenuItem createTriggerJMI;
+    private javax.swing.JMenuItem insertIfElseJMI;
+    private javax.swing.JMenuItem insertIfJMI;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel lblObjectDate;
     private javax.swing.JLabel lblObjectName;
@@ -489,6 +584,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane scrpnlGrid;
     private javax.swing.JScrollPane scrpnlHistoryContent;
     private javax.swing.JScrollPane scrpnlHistoryGrid;
+    private javax.swing.JPopupMenu.Separator separador1JS;
     private javax.swing.JTabbedPane tbdpanelMain;
     private javax.swing.JTable tblObjectHistory;
     private javax.swing.JTable tblObjects;

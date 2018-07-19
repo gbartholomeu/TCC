@@ -2,6 +2,56 @@
 
 <Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
+    <Container class="javax.swing.JPopupMenu" name="auxJPM">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
+        <Property name="useNullLayout" type="boolean" value="true"/>
+      </Layout>
+      <SubComponents>
+        <MenuItem class="javax.swing.JMenuItem" name="createProcedureJMI">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Create procedure template"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createProcedureJMIActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="createFunctionJMI">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Create function template"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createFunctionJMIActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="createTriggerJMI">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Create trigger template"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createTriggerJMIActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <Component class="javax.swing.JPopupMenu$Separator" name="separador1JS">
+        </Component>
+        <MenuItem class="javax.swing.JMenuItem" name="insertIfJMI">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Insert clause IF"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="insertIfJMIActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="insertIfElseJMI">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Insert clause IF/ELSE"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="insertIfElseJMIActionPerformed"/>
+          </Events>
+        </MenuItem>
+      </SubComponents>
+    </Container>
     <Menu class="javax.swing.JMenuBar" name="menuBar">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="menuUser">
@@ -21,9 +71,6 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Trocar senha"/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuPasswordActionPerformed"/>
-              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -264,6 +311,9 @@
                                 <Property name="columns" type="int" value="20"/>
                                 <Property name="rows" type="int" value="5"/>
                               </Properties>
+                              <Events>
+                                <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="txtareaSQLMouseReleased"/>
+                              </Events>
                             </Component>
                           </SubComponents>
                         </Container>

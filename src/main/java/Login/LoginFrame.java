@@ -17,7 +17,6 @@ import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Random;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -140,7 +139,7 @@ public class LoginFrame extends javax.swing.JFrame {
 //        byte[] salt = Cryptography.getSecuredByte();
 //        int interations = r.nextInt(10) + 1;
 //        int keyLength = r.nextInt(10) + 1;
-//        byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, keyLength, "281096");
+//        byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, keyLength, getTxtPassw().getPassword().toString());
 //        int retorno = DAO.insertIntoDatabase(Const.SQL.INSERT_USER.getSqlCode(), getTxtUser().getText(), salt, interations, keyLength, senhaCriptografia);
 //
 //        if (retorno == 0) {
