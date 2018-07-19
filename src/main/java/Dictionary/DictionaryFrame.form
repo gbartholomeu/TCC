@@ -10,7 +10,7 @@
       <SubComponents>
         <MenuItem class="javax.swing.JMenuItem" name="createTemplateJMI">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Create template"/>
+            <Property name="text" type="java.lang.String" value="Criar com template"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createTemplateJMIActionPerformed"/>
@@ -20,7 +20,7 @@
         </Component>
         <MenuItem class="javax.swing.JMenuItem" name="insertIfJMI">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Insert clause IF"/>
+            <Property name="text" type="java.lang.String" value="Inserir cl&#xe1;usula IF"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="insertIfJMIActionPerformed"/>
@@ -28,10 +28,20 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="insertIfElseJMI">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Insert clause IF/ELSE"/>
+            <Property name="text" type="java.lang.String" value="Inserir cl&#xe1;usula IF/ELSE"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="insertIfElseJMIActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <Component class="javax.swing.JPopupMenu$Separator" name="separador2JS">
+        </Component>
+        <MenuItem class="javax.swing.JMenuItem" name="validateObject">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Validar objeto"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="validateObjectActionPerformed"/>
           </Events>
         </MenuItem>
       </SubComponents>
@@ -230,14 +240,6 @@
                               <AuxValues>
                                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                               </AuxValues>
-                            </Component>
-                            <Component class="javax.swing.JTextField" name="txtObjectType">
-                              <Properties>
-                                <Property name="enabled" type="boolean" value="false"/>
-                                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                                  <Dimension value="[100, 20]"/>
-                                </Property>
-                              </Properties>
                             </Component>
                             <Component class="javax.swing.JLabel" name="lblObjectDate">
                               <Properties>

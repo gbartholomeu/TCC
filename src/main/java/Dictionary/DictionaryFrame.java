@@ -13,7 +13,6 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
-import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -37,13 +36,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.plaf.basic.BasicListUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import sun.java2d.SunGraphicsEnvironment;
@@ -86,6 +80,8 @@ public class DictionaryFrame extends javax.swing.JFrame {
         separador1JS = new javax.swing.JPopupMenu.Separator();
         insertIfJMI = new javax.swing.JMenuItem();
         insertIfElseJMI = new javax.swing.JMenuItem();
+        separador2JS = new javax.swing.JPopupMenu.Separator();
+        validateObject = new javax.swing.JMenuItem();
         pnlMain = new javax.swing.JPanel();
         tbdpanelMain = new javax.swing.JTabbedPane();
         pnlGrid = new javax.swing.JPanel();
@@ -99,7 +95,6 @@ public class DictionaryFrame extends javax.swing.JFrame {
         txtObjectName = new javax.swing.JTextField();
         lblObjectType = new javax.swing.JLabel();
         cmbBoxObjectType = new javax.swing.JComboBox<>();
-        txtObjectType = new javax.swing.JTextField();
         lblObjectDate = new javax.swing.JLabel();
         txtObjectDate = new javax.swing.JTextField();
         lblObjectUser = new javax.swing.JLabel();
@@ -125,7 +120,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         menuItemUser = new javax.swing.JMenuItem();
         menuPassword = new javax.swing.JMenuItem();
 
-        createTemplateJMI.setText("Create template");
+        createTemplateJMI.setText("Criar com template");
         createTemplateJMI.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 createTemplateJMIActionPerformed(evt);
@@ -134,7 +129,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         auxJPM.add(createTemplateJMI);
         auxJPM.add(separador1JS);
 
-        insertIfJMI.setText("Insert clause IF");
+        insertIfJMI.setText("Inserir cláusula IF");
         insertIfJMI.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 insertIfJMIActionPerformed(evt);
@@ -142,13 +137,22 @@ public class DictionaryFrame extends javax.swing.JFrame {
         });
         auxJPM.add(insertIfJMI);
 
-        insertIfElseJMI.setText("Insert clause IF/ELSE");
+        insertIfElseJMI.setText("Inserir cláusula IF/ELSE");
         insertIfElseJMI.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 insertIfElseJMIActionPerformed(evt);
             }
         });
         auxJPM.add(insertIfElseJMI);
+        auxJPM.add(separador2JS);
+
+        validateObject.setText("Validar objeto");
+        validateObject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                validateObjectActionPerformed(evt);
+            }
+        });
+        auxJPM.add(validateObject);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("frmDictionary"); // NOI18N
@@ -197,10 +201,6 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
         cmbBoxObjectType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         pnlSQLInformation.add(cmbBoxObjectType);
-
-        txtObjectType.setEnabled(false);
-        txtObjectType.setPreferredSize(new java.awt.Dimension(100, 20));
-        pnlSQLInformation.add(txtObjectType);
 
         lblObjectDate.setText("Data inserção: ");
         pnlSQLInformation.add(lblObjectDate);
@@ -403,26 +403,25 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
                 getTblObjects().setRowSelectionInterval(lastRow, lastRow);
                 fillFieldsFromObject();
-                enabledAllFields(false);
             }
         } else {
             int insertDatabase = DAO.updateRegisterDatabase(Constantes.Const.SQL.UPDATE_OBJECT.getSqlCode(), getTxtObjectName().getText(), getCmbBoxObjectType().getItemAt(getCmbBoxObjectType().getSelectedIndex()), getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
             if (insertDatabase == 0) {
                 JOptionPane.showMessageDialog(this, "Falha ao atualizar objeto");
             } else {
-//                getBtnNew().setEnabled(true);
-//                getBtnSave().setEnabled(false);
-//                getBtnUndo().setEnabled(false);
-//                getBtnDetail().setEnabled(true);
-//                getBtnInactivate().setEnabled(true);
-//                fillObjectsTable(false);
-//                int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
-//                getTblObjects().setRowSelectionInterval(lastRow, lastRow);
-//                fillFieldsFromObject();
-//                enabledAllFields(false);
+                getBtnNew().setEnabled(true);
+                getBtnSave().setEnabled(false);
+                getBtnUndo().setEnabled(false);
+                getBtnDetail().setEnabled(true);
+                getBtnInactivate().setEnabled(true);
+                fillObjectsTable(false);
+                int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
+                getTblObjects().setRowSelectionInterval(lastRow, lastRow);
+                fillFieldsFromObject();
             }
         }
-
+        validateObject();
+        changeCard();
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUndoActionPerformed
@@ -445,7 +444,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         fillFieldsFromObject();
         loadObjectTypeComboBox(true);
         textArea = getTxtAreaSQL().getText();
-        getBtnSave().setEnabled(true);
+        getBtnSave().setEnabled("cardDetail".equalsIgnoreCase(selectedCard));
         //enabledAllFields(false);
     }//GEN-LAST:event_btnDetailActionPerformed
 
@@ -502,10 +501,28 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_insertIfElseJMIActionPerformed
 
     private void txtareaSQLMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtareaSQLMouseReleased
-        if(evt.getButton()==MouseEvent.BUTTON3){
+        if (evt.getButton() == MouseEvent.BUTTON3) {
             auxJPM.show(this, evt.getX() + 20, evt.getY() + 20);
-        }  
+        }
     }//GEN-LAST:event_txtareaSQLMouseReleased
+
+    private void validateObjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_validateObjectActionPerformed
+        validateObject();
+    }//GEN-LAST:event_validateObjectActionPerformed
+
+    private void validateObject() {
+        int delete = DAO.updateRegisterDatabase(DictionaryFrameController.getDropClause(txtObjectName.getText(), isProcedure(), isFunction(), isTrigger()));
+        if (delete == 1) {
+            JOptionPane.showMessageDialog(this, "Falha ao excluir objeto");
+        }
+
+        int i = DAO.updateRegisterDatabase(getTxtAreaSQL().getText());
+        if (i == 1) {
+            JOptionPane.showMessageDialog(this, "Falha ao validar objeto");
+        } else {
+            JOptionPane.showMessageDialog(this, "Objeto validado com sucesso");
+        }
+    }
 
     private void callCreateTemplate() {
         txtareaSQL.append(DictionaryFrameController.getProcedureFunctionTriggerTemplate(txtObjectName.getText(), isProcedure(), isFunction(), isTrigger()));
@@ -557,15 +574,16 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane scrpnlHistoryContent;
     private javax.swing.JScrollPane scrpnlHistoryGrid;
     private javax.swing.JPopupMenu.Separator separador1JS;
+    private javax.swing.JPopupMenu.Separator separador2JS;
     private javax.swing.JTabbedPane tbdpanelMain;
     private javax.swing.JTable tblObjectHistory;
     private javax.swing.JTable tblObjects;
     private javax.swing.JTextField txtObjectDate;
     private javax.swing.JTextField txtObjectName;
-    private javax.swing.JTextField txtObjectType;
     private javax.swing.JTextField txtObjectUser;
     private javax.swing.JTextArea txtareaHistoryContent;
     private javax.swing.JTextArea txtareaSQL;
+    private javax.swing.JMenuItem validateObject;
     // End of variables declaration//GEN-END:variables
 
     public void setConfiguration() {
@@ -792,7 +810,6 @@ public class DictionaryFrame extends javax.swing.JFrame {
         String str = "";
         getTxtObjectName().setText(str);
         getCmbBoxObjectType().setSelectedItem(null);
-        getTxtObjectType().setText(str);
         getTxtObjectDate().setText(str);
         getTxtObjectUser().setText(str);
         getTxtAreaSQL().setText(str);
@@ -876,10 +893,6 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
     public JTextField getTxtObjectName() {
         return txtObjectName;
-    }
-
-    public JTextField getTxtObjectType() {
-        return txtObjectType;
     }
 
     public JTextField getTxtObjectUser() {

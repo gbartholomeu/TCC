@@ -19,24 +19,23 @@ public class DictionaryFrameController {
 
         String procFuncTrig = nameObject.equals("") ? "new_procedure" : nameObject;
         String type = (isProcedure) ? "PROCEDURE" : (isFunction) ? "FUNCTION" : (isTrigger) ? "TRIGGER" : "";
+        //"DROP " + type + " IF EXISTS " + procFuncTrig + ";\n"
 
-        return "DROP " + type + " IF EXISTS " + procFuncTrig + ";\n"
-                + "CREATE " + type + " `" + procFuncTrig + "` ()\n"
+        return "CREATE " + type + " `" + procFuncTrig + "` ()\n"
                 + "BEGIN\n"
                 + "\n"
                 + "\n"
                 + "\n"
                 + "\n"
-                + "END";
-
+                + "END;";
     }
 
     public static String getProcedureOrFunctionTemplateWithVariables(String nameProcedure, ArrayList<CHashMap> variables, boolean isProcedure, boolean isFunction, String tipoRetorno, boolean isTrigger) {
         String procFuncTrig = nameProcedure.equals("") ? "new_procedure" : nameProcedure;
         String type = (isProcedure) ? "PROCEDURE" : (isFunction) ? "FUNCTION" : (isTrigger) ? "TRIGGER" : "";
 
-        String sql = "DROP " + type + " IF EXISTS " + procFuncTrig + ";\n";
-
+        //String sql = "DROP " + type + " IF EXISTS " + procFuncTrig + ";\n";
+        String sql = "";
         if (isProcedure && !isFunction && !isTrigger) {
             sql += "CREATE PROCEDURE `" + procFuncTrig + "` (" + getVariablesAsString(variables) + ")"
                     + "\nBEGIN\n"
@@ -45,8 +44,7 @@ public class DictionaryFrameController {
                     + "\n"
                     + "\n"
                     + "\n"
-                    + "END";
-
+                    + "END;";
         } else if (!isProcedure && isFunction && !isTrigger) {
             sql += "CREATE FUNCTION `" + procFuncTrig + "` (" + getVariablesAsString(variables) + ")"
                     + "\nRETURNS " + tipoRetorno
@@ -56,11 +54,17 @@ public class DictionaryFrameController {
                     + "\n"
                     + "\n"
                     + "\nRETURN *retorno*;"
-                    + "\nEND";
-
+                    + "\nEND;";
         }
         System.out.println(sql);
         return sql;
+    }
+
+    public static String getDropClause(String nameObject, boolean isProcedure, boolean isFunction, boolean isTrigger) {
+      String procFuncTrig = nameObject.equals("") ? "new_procedure" : nameObject;
+        String type = (isProcedure) ? "PROCEDURE" : (isFunction) ? "FUNCTION" : (isTrigger) ? "TRIGGER" : "";
+
+        return "DROP " + type + " IF EXISTS " + procFuncTrig + ";\n";
     }
 
     private static String getVariablesAsString(ArrayList<CHashMap> variables) {
@@ -90,7 +94,6 @@ public class DictionaryFrameController {
             variablesAsString += " " + variables.get(x).getValorAsString("TYPE_VARIABLE");
             variablesAsString += separador;
         }
-
         return variablesAsString;
 
     }
@@ -114,7 +117,6 @@ public class DictionaryFrameController {
             jTextArea.setText(startText + text + endText);
             jTextArea.setCaretPosition(pos);
         }
-
     }
 
 }
