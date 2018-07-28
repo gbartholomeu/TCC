@@ -5,6 +5,7 @@
  */
 package Utils;
 
+import java.awt.Component;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,8 +24,8 @@ public class Utilities {
             return "";
         }
     }
-    
-    public static String converteInt(Object o){
+
+    public static String converteInt(Object o) {
         int numero = validaInt(o);
         return String.valueOf(numero);
     }
@@ -77,5 +78,25 @@ public class Utilities {
         }
         return data;
     }
-        
+
+    public static void objectEnabledControl(boolean enabled, Object... args) {
+        if (args != null && args.length > 0) {
+            for (Object obj : args) {
+                if (obj instanceof Component) {
+                    ((Component) obj).setEnabled(enabled);
+                }
+            }
+        }
+    }
+
+    public static void objectVisibilityControl(boolean visible, Object... args) {
+        if (args != null && args.length > 0) {
+            for (Object obj : args) {
+                if (obj instanceof Component) {
+                    ((Component) obj).setVisible(visible);
+                }
+            }
+        }
+    }
+
 }

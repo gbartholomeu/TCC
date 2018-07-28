@@ -33,7 +33,7 @@ public class CHashMap extends HashMap {
 
     public static ArrayList<HashMap> converteCHashMap(ArrayList<CHashMap> lista) {
         ArrayList<HashMap> retorno = new ArrayList<HashMap>();
-        for(int x = 0; x<lista.size();x++){            
+        for (int x = 0; x < lista.size(); x++) {
             retorno.add(lista.get(x));
         }
         return retorno;

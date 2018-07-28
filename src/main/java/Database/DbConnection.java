@@ -15,7 +15,7 @@ import java.sql.SQLException;
  */
 public class DbConnection {
 
-    public static String url = "jdbc:mysql://cristianweb.com.br:3306/crist609_database_management?useTimezone=true&serverTimezone=UTC&useSSL=false";
+    public static String url = "jdbc:mysql://cristianweb.com.br:3306/crist609_database_management?useTimezone=true&serverTimezone=America/Sao_Paulo&useSSL=false";
     public static String driverName = "com.mysql.cj.jdbc.Driver";
     public static String username = "crist609_root";
     public static String password = "281096";
