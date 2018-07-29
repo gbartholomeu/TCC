@@ -61,7 +61,7 @@ public class DictionaryFrameController {
     }
 
     public static String getDropClause(String nameObject, boolean isProcedure, boolean isFunction, boolean isTrigger) {
-      String procFuncTrig = nameObject.equals("") ? "new_procedure" : nameObject;
+        String procFuncTrig = nameObject.equals("") ? "new_procedure" : nameObject;
         String type = (isProcedure) ? "PROCEDURE" : (isFunction) ? "FUNCTION" : (isTrigger) ? "TRIGGER" : "";
 
         return "DROP " + type + " IF EXISTS " + procFuncTrig + ";\n";

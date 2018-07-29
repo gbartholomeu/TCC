@@ -179,18 +179,18 @@ public class LoginFrame extends javax.swing.JFrame {
                     dic.setVisible(true);
                     getLoginFrame().setVisible(false);
                 } else {
-                    JOptionPane.showMessageDialog(loginInstance, "Senha incorreta");
+                    JOptionPane.showMessageDialog(getLoginFrame(), "Senha incorreta");
                 }
             } else {
-                JOptionPane.showMessageDialog(loginInstance, "Usuário não existe");
+                JOptionPane.showMessageDialog(getLoginFrame(), "Usuário não existe");
             }
         } else {
-            JOptionPane.showMessageDialog(loginInstance, "Por favor insira um usuário");
+            JOptionPane.showMessageDialog(getLoginFrame(), "Por favor insira um usuário");
         }
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
-        loginInstance.dispose();
+        getLoginFrame().dispose();
     }//GEN-LAST:event_btnExitActionPerformed
 
     /**

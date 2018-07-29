@@ -29,6 +29,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -38,7 +39,6 @@ import javax.swing.SwingUtilities;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import sun.java2d.SunGraphicsEnvironment;
@@ -57,6 +57,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
     private boolean isEditingMode = false;
     private boolean isCreatingMode = false;
+    private char searchMode = 'A';
 
     /**
      * Creates new form DictionaryFrame
@@ -91,6 +92,11 @@ public class DictionaryFrame extends javax.swing.JFrame {
         insertIfElseJMI = new javax.swing.JMenuItem();
         separador2JS = new javax.swing.JPopupMenu.Separator();
         validateObject = new javax.swing.JMenuItem();
+        objectsJPM = new javax.swing.JPopupMenu();
+        filtersJMenu = new javax.swing.JMenu();
+        allJMI = new javax.swing.JMenuItem();
+        onlyActiveJMI = new javax.swing.JMenuItem();
+        onlyInactiveJMI = new javax.swing.JMenuItem();
         pnlMain = new javax.swing.JPanel();
         tbdpanelMain = new javax.swing.JTabbedPane();
         pnlGrid = new javax.swing.JPanel();
@@ -163,6 +169,34 @@ public class DictionaryFrame extends javax.swing.JFrame {
         });
         auxJPM.add(validateObject);
 
+        filtersJMenu.setText("Filtros");
+
+        allJMI.setText("Todos os objetos");
+        allJMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                allJMIActionPerformed(evt);
+            }
+        });
+        filtersJMenu.add(allJMI);
+
+        onlyActiveJMI.setText("Apenas ativos");
+        onlyActiveJMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                onlyActiveJMIActionPerformed(evt);
+            }
+        });
+        filtersJMenu.add(onlyActiveJMI);
+
+        onlyInactiveJMI.setText("Apenas inativos");
+        onlyInactiveJMI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                onlyInactiveJMIActionPerformed(evt);
+            }
+        });
+        filtersJMenu.add(onlyInactiveJMI);
+
+        objectsJPM.add(filtersJMenu);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("frmDictionary"); // NOI18N
 
@@ -180,6 +214,12 @@ public class DictionaryFrame extends javax.swing.JFrame {
         pnlGridView.setName(""); // NOI18N
         pnlGridView.setLayout(new java.awt.BorderLayout());
 
+        scrpnlGrid.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                scrpnlGridMouseReleased(evt);
+            }
+        });
+
         tblObjects.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -192,6 +232,11 @@ public class DictionaryFrame extends javax.swing.JFrame {
             }
         ));
         tblObjects.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tblObjects.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tblObjectsMouseReleased(evt);
+            }
+        });
         scrpnlGrid.setViewportView(tblObjects);
 
         pnlGridView.add(scrpnlGrid, java.awt.BorderLayout.CENTER);
@@ -397,7 +442,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         loadObjectTypeComboBox();
         fillFieldsEmptyText();
         enabledAllFields(true);
-        if ("cardGrid".equalsIgnoreCase(selectedCard)) {
+        if ("cardGrid".equalsIgnoreCase(getSelectedCard())) {
             changeCard();
         }
         controlEditButton();
@@ -450,17 +495,17 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private void btnUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUndoActionPerformed
         Utilities.objectEnabledControl(true, getBtnNew());
         Utilities.objectEnabledControl(false, getBtnSave(), getBtnUndo());
-        Utilities.objectEnabledControl(getTblObjects().getRowCount() > 0, getBtnDetail());
+        Utilities.objectEnabledControl(getTblObjects().getSelectedRow() > -1, getBtnDetail());
         setIsEditingMode(false);
         setIsCreatingMode(false);
-        setBtnInactivateEnabledWithValidation(getTblObjects().getRowCount() > 0);
-        changeCard(); // Alterar 
+        setBtnInactivateEnabledWithValidation(getTblObjects().getSelectedRow() > -1);
+        changeCardToGrid(true); // Alterar 
         controlEditButton();
         //enabledAllFields(false);
     }//GEN-LAST:event_btnUndoActionPerformed
 
     private void btnDetailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetailActionPerformed
-        if ("cardDetail".equalsIgnoreCase(selectedCard)) {
+        if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
             getBtnDetail().setText("Detalhe");
         } else {
             getBtnDetail().setText("Grid");
@@ -494,7 +539,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
             if (deleteFromDatabase == 0) {
                 JOptionPane.showMessageDialog(this, "Falha ao atualizar o objeto do banco");
             } else {
-                if ("cardDetail".equalsIgnoreCase(selectedCard)) {
+                if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
                     changeCard();
                 }
                 fillObjectsTable();
@@ -518,16 +563,16 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_createTemplateJMIActionPerformed
 
     private void insertIfJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertIfJMIActionPerformed
-        DictionaryFrameController.addIf(txtareaSQL);
+        DictionaryFrameController.addIf(getTxtAreaSQL());
     }//GEN-LAST:event_insertIfJMIActionPerformed
 
     private void insertIfElseJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertIfElseJMIActionPerformed
-        DictionaryFrameController.addIfElse(txtareaSQL);
+        DictionaryFrameController.addIfElse(getTxtAreaSQL());
     }//GEN-LAST:event_insertIfElseJMIActionPerformed
 
     private void txtareaSQLMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtareaSQLMouseReleased
-        if (evt.getButton() == MouseEvent.BUTTON3) {
-            auxJPM.show(this, evt.getX() + 20, evt.getY() + 20);
+        if (evt.getButton() == MouseEvent.BUTTON3 && getTxtAreaSQL().isEnabled()) {
+            getAuxJPM().show(this, evt.getX() + 20, evt.getY() + 20);
         }
     }//GEN-LAST:event_txtareaSQLMouseReleased
 
@@ -536,15 +581,48 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_validateObjectActionPerformed
 
     private void tbdpanelMainStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tbdpanelMainStateChanged
-        if (((JTabbedPane) evt.getSource()).getSelectedComponent().equals(pnlHistory)) {
+        if (((JTabbedPane) evt.getSource()).getSelectedComponent().equals(getPnlHistory())) {
             getPnlButtons().setVisible(false);
         } else {
             getPnlButtons().setVisible(true);
         }
     }//GEN-LAST:event_tbdpanelMainStateChanged
 
+    private void tblObjectsMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblObjectsMouseReleased
+        objectsMenuItem(evt);
+    }//GEN-LAST:event_tblObjectsMouseReleased
+
+    private void scrpnlGridMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_scrpnlGridMouseReleased
+        objectsMenuItem(evt);
+    }//GEN-LAST:event_scrpnlGridMouseReleased
+
+    private void allJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allJMIActionPerformed
+        setSearchMode('T');
+        fillObjectsTable();
+    }//GEN-LAST:event_allJMIActionPerformed
+
+    private void onlyActiveJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onlyActiveJMIActionPerformed
+        setSearchMode('A');
+        fillObjectsTable();
+
+    }//GEN-LAST:event_onlyActiveJMIActionPerformed
+
+    private void onlyInactiveJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onlyInactiveJMIActionPerformed
+        setSearchMode('I');
+        fillObjectsTable();
+    }//GEN-LAST:event_onlyInactiveJMIActionPerformed
+
+    private void objectsMenuItem(MouseEvent evt) {
+        if (evt.getButton() == MouseEvent.BUTTON3 && getTblObjects().getSelectedRow() > -1) {
+            getOnlyActiveJMI().setVisible(getSearchMode() != 'A');
+            getOnlyInactiveJMI().setVisible(getSearchMode() != 'I');
+            getAllJMI().setVisible(getSearchMode() != 'T');
+            getObjectsJPM().show(this, evt.getX() + 20, evt.getY() + 20);
+        }
+    }
+
     private void validateObject() {
-        int delete = DAO.updateRegisterDatabase(DictionaryFrameController.getDropClause(txtObjectName.getText(), isProcedure(), isFunction(), isTrigger()));
+        int delete = DAO.updateRegisterDatabase(DictionaryFrameController.getDropClause(getTxtObjectName().getText(), isProcedure(), isFunction(), isTrigger()));
         if (delete == 1) {
             JOptionPane.showMessageDialog(this, "Falha ao excluir objeto");
         }
@@ -573,6 +651,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         return (Utilities.validaString(getCmbBoxObjectType().getSelectedItem()).equalsIgnoreCase("TRIGGER"));
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem allJMI;
     private javax.swing.JPopupMenu auxJPM;
     private javax.swing.JButton btnDetail;
     private javax.swing.JButton btnInactivate;
@@ -581,6 +660,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnUndo;
     private javax.swing.JComboBox<String> cmbBoxObjectType;
     private javax.swing.JMenuItem createTemplateJMI;
+    private javax.swing.JMenu filtersJMenu;
     private javax.swing.JMenuItem insertIfElseJMI;
     private javax.swing.JMenuItem insertIfJMI;
     private javax.swing.JToolBar jToolBar1;
@@ -592,6 +672,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuItemUser;
     private javax.swing.JMenuItem menuPassword;
     private javax.swing.JMenu menuUser;
+    private javax.swing.JPopupMenu objectsJPM;
+    private javax.swing.JMenuItem onlyActiveJMI;
+    private javax.swing.JMenuItem onlyInactiveJMI;
     private javax.swing.JPanel pnlButtons;
     private javax.swing.JPanel pnlDetailView;
     private javax.swing.JPanel pnlGrid;
@@ -672,7 +755,21 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }
 
     private void fillObjectsTable(boolean selectFirstRow) {
-        ResultSet rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICTIONARY.getSqlCode());
+        ResultSet rs = null;
+        switch (getSearchMode()) {
+            case 'T': {
+                rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICTIONARY.getSqlCode());
+                break;
+            }
+            case 'A': {
+                rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ONLY_ACTIVE_DICTIONARY.getSqlCode());
+                break;
+            }
+            case 'I': {
+                rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ONLY_INACTIVE_DICTIONARY.getSqlCode());
+                break;
+            }
+        }
 
         while (getTblObjects().getRowCount() > 0) {
             ((DefaultTableModel) getTblObjects().getModel()).removeRow(0);
@@ -867,6 +964,25 @@ public class DictionaryFrame extends javax.swing.JFrame {
         getTxtAreaSQL().setEnabled(enabled);
     }
 
+    private void setBtnInactivateEnabledWithValidation(boolean setActivate) {
+        Utilities.objectEnabledControl(UserInstance.isAdmin() && setActivate, getBtnInactivate());
+    }
+
+    private void controlEditButton() {
+        if (isCreatingMode() || isEditingMode()) {
+            getBtnSave().setText("Salvar");
+            Utilities.objectEnabledControl(!getBtnNew().isEnabled(), getTxtAreaSQL());
+        } else {
+            getBtnSave().setText("Editar");
+            Utilities.objectEnabledControl(!getBtnNew().isEnabled(), getTxtAreaSQL(), getCmbBoxObjectType());
+            Utilities.objectEnabledControl(getBtnNew().isEnabled(), getBtnSave());
+        }
+    }
+
+    private void controlInactiveButton() {
+        Utilities.objectEnabledControl(getTblObjects().getSelectedRow() > -1 && UserInstance.isAdmin(), getBtnUndo());
+    }
+
     public DictionaryFrame getDicFrame() {
         return this;
     }
@@ -979,18 +1095,36 @@ public class DictionaryFrame extends javax.swing.JFrame {
         return parentFrame;
     }
 
-    private void setBtnInactivateEnabledWithValidation(boolean setActivate) {
-        Utilities.objectEnabledControl(UserInstance.isAdmin() && setActivate, getBtnInactivate());
+    public JPopupMenu getAuxJPM() {
+        return auxJPM;
     }
 
-    private void controlEditButton() {
-        if (isCreatingMode() || isEditingMode()) {
-            getBtnSave().setText("Salvar");
-            Utilities.objectEnabledControl(!getBtnNew().isEnabled(), getTxtAreaSQL());
-        } else {
-            getBtnSave().setText("Editar");
-            Utilities.objectEnabledControl(!getBtnNew().isEnabled(), getTxtAreaSQL(), getCmbBoxObjectType());
-            Utilities.objectEnabledControl(getBtnNew().isEnabled(), getBtnSave());
-        }
+    public JPanel getPnlHistory() {
+        return pnlHistory;
     }
+
+    public char getSearchMode() {
+        return searchMode;
+    }
+
+    public void setSearchMode(char searchMode) {
+        this.searchMode = searchMode;
+    }
+
+    public JMenuItem getAllJMI() {
+        return allJMI;
+    }
+
+    public JMenuItem getOnlyActiveJMI() {
+        return onlyActiveJMI;
+    }
+
+    public JMenuItem getOnlyInactiveJMI() {
+        return onlyInactiveJMI;
+    }
+
+    public JPopupMenu getObjectsJPM() {
+        return objectsJPM;
+    }
+
 }
