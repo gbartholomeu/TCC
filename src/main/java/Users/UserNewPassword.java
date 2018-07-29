@@ -8,13 +8,10 @@ package Users;
 import Constantes.Const;
 import Database.DAO;
 import Utils.Cryptography;
-import static java.awt.Frame.MAXIMIZED_BOTH;
-import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
-import sun.java2d.SunGraphicsEnvironment;
 import java.util.Random;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -150,7 +147,7 @@ public class UserNewPassword extends javax.swing.JFrame {
         getUserPassFrame().addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                parentFrame.setVisible(true);
+                getParentFrame().setVisible(true);
             }
         });
     }
@@ -172,4 +169,9 @@ public class UserNewPassword extends javax.swing.JFrame {
     public JPasswordField getTxtPassw() {
         return txtPassw;
     }
+
+    public JFrame getParentFrame() {
+        return parentFrame;
+    }
+    
 }

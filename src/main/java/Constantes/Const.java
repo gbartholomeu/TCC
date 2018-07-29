@@ -24,6 +24,15 @@ public class Const {
         SELECT_ALL_DICTIONARY(
                 "SELECT * "
                 + "FROM dictionary;"),
+        SELECT_ONLY_ACTIVE_DICTIONARY(
+                "SELECT * "
+                + "FROM dictionary "
+                + "WHERE ISACTIVE =1 "
+                + "OR ISACTIVE IS NULL ;"),
+        SELECT_ONLY_INACTIVE_DICTIONARY(
+                "SELECT * "
+                + "FROM dictionary "
+                + "WHERE ISACTIVE = 0;"),
         SELECT_ALL_DICTIONARY_HISTORY(
                 "SELECT * \n"
                 + "FROM dictionary_history \n"

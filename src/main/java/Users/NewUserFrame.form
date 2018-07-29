@@ -126,9 +126,6 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Administrador"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxAdminActionPerformed"/>
-          </Events>
         </Component>
       </SubComponents>
     </Container>

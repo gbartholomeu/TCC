@@ -7,7 +7,6 @@ package Users;
 
 import Database.DAO;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
-import java.awt.CardLayout;
 import java.awt.EventQueue;
 import static java.awt.Frame.MAXIMIZED_BOTH;
 import java.awt.Rectangle;
@@ -18,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.table.DefaultTableModel;
@@ -58,7 +58,7 @@ public class UserFrame extends javax.swing.JFrame {
         getUserFrame().addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                parentFrame.setVisible(true);
+                getParentFrame().setVisible(true);
             }
         });
     }
@@ -191,7 +191,7 @@ public class UserFrame extends javax.swing.JFrame {
 
     private void tblUserMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblUserMouseReleased
         if (evt.getButton() == MouseEvent.BUTTON3) {
-            popUpUser.show(this, evt.getX() + 20, evt.getY() + 20);
+            getPopUpUser().show(this, evt.getX() + 20, evt.getY() + 20);
         }
     }//GEN-LAST:event_tblUserMouseReleased
 
@@ -210,6 +210,14 @@ public class UserFrame extends javax.swing.JFrame {
 
     public JTable getTblUser() {
         return tblUser;
+    }
+
+    public JFrame getParentFrame() {
+        return parentFrame;
+    }
+
+    public JPopupMenu getPopUpUser() {
+        return popUpUser;
     }
 
 }
