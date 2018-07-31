@@ -710,8 +710,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 if (1 == selectedPane.getSelectedIndex()) {
                     getScrpnlHistoryContent().setPreferredSize(new Dimension(getDicFrame().getWidth(), 500));
                     fillHistoryTable(true);
-                    getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getValueAt(getTblObjectHistory().getSelectedRow(), 1)));
-                    getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
+                    getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 4)));
                 }
                 Utilities.objectEnabledControl(0 == selectedPane.getSelectedIndex(), getBtnNew(), getBtnDetail());
                 setBtnInactivateEnabledWithValidation(0 == selectedPane.getSelectedIndex());
@@ -801,8 +800,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
         }
-        getTblObjects().removeColumn(getTblObjects().getColumnModel().getColumn(3));
-        getTblObjects().removeColumn(getTblObjects().getColumnModel().getColumn(5));
+        getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(3));
         adjustTableColumns(getTblObjects().getColumnModel());
         if (selectFirstRow) {
             getTblObjects().getSelectionModel().setSelectionInterval(0, 0);
@@ -853,9 +851,10 @@ public class DictionaryFrame extends javax.swing.JFrame {
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
         }
-        getTblObjectHistory().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
-        getTblObjectHistory().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
-        getTblObjectHistory().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
+        getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(4));
+        getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(3));
+        getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(2));
+        getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
         adjustTableColumns(getTblObjectHistory().getColumnModel());
         if (selectFirstRow) {
             getTblObjectHistory().getSelectionModel().setSelectionInterval(0, 0);
@@ -878,6 +877,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
             }
             case "nm_user": {
                 return "Usuário";
+            }
+            case "isActive":{
+                return "Ativo";
             }
         }
         return "Error";
