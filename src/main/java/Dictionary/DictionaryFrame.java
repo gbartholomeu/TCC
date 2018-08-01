@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -451,7 +452,16 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         if (isEditingMode() || isCreatingMode()) {
             if ("".equalsIgnoreCase(getTxtObjectDate().getText())) {
-                int insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), getCmbBoxObjectType().getItemAt(getCmbBoxObjectType().getSelectedIndex()), getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo());
+                int cdObjectType = -1;
+                ResultSet objectType = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_OBJECT_TYPES_CODE.getSqlCode(), getCmbBoxObjectType().getItemAt(getCmbBoxObjectType().getSelectedIndex()));
+                try {
+                    if (objectType.next()) {
+                        cdObjectType = objectType.getInt("object_code");
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(DictionaryFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                int insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), cdObjectType, getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo());
                 if (insertDatabase == 0) {
                     JOptionPane.showMessageDialog(this, "Falha ao adicionar objeto");
                 } else {
@@ -464,7 +474,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
                     fillFieldsFromObject();
                 }
             } else {
-                int insertDatabase = DAO.updateRegisterDatabase(Constantes.Const.SQL.UPDATE_OBJECT.getSqlCode(), getTxtObjectName().getText(), getCmbBoxObjectType().getItemAt(getCmbBoxObjectType().getSelectedIndex()), getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
+                int insertDatabase = DAO.updateRegisterDatabase(Constantes.Const.SQL.UPDATE_OBJECT.getSqlCode(), getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
                 if (insertDatabase == 0) {
                     JOptionPane.showMessageDialog(this, "Falha ao atualizar objeto");
                 } else {
@@ -604,7 +614,6 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private void onlyActiveJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onlyActiveJMIActionPerformed
         setSearchMode('A');
         fillObjectsTable();
-
     }//GEN-LAST:event_onlyActiveJMIActionPerformed
 
     private void onlyInactiveJMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onlyInactiveJMIActionPerformed
@@ -710,7 +719,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 if (1 == selectedPane.getSelectedIndex()) {
                     getScrpnlHistoryContent().setPreferredSize(new Dimension(getDicFrame().getWidth(), 500));
                     fillHistoryTable(true);
-                    getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 4)));
+                    getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 2)));
                 }
                 Utilities.objectEnabledControl(0 == selectedPane.getSelectedIndex(), getBtnNew(), getBtnDetail());
                 setBtnInactivateEnabledWithValidation(0 == selectedPane.getSelectedIndex());
@@ -719,7 +728,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
         getTblObjectHistory().getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             EventQueue.invokeLater(() -> {
-                getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 4)));
+                getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 2)));
             });
         });
         fillObjectsTable();
@@ -800,7 +809,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
         }
-        getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(3));
+        getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(6));
+        getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(4));
+        getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(2));
         adjustTableColumns(getTblObjects().getColumnModel());
         if (selectFirstRow) {
             getTblObjects().getSelectionModel().setSelectionInterval(0, 0);
@@ -851,8 +862,8 @@ public class DictionaryFrame extends javax.swing.JFrame {
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
         }
+
         getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(4));
-        getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(3));
         getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(2));
         getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
         adjustTableColumns(getTblObjectHistory().getColumnModel());
@@ -863,22 +874,22 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
     private String getColumnName(String nmColunaCampo) {
         switch (nmColunaCampo) {
-            case "nr_sequence": {
+            case "NR_SEQUENCE": {
                 return "Sequência";
             }
-            case "ds_name": {
+            case "DS_NAME": {
                 return "Nome objeto";
             }
-            case "ie_type": {
+            case "DS_TYPE": {
                 return "Tipo objeto";
             }
-            case "dt_insertion": {
+            case "DT_INSERTION": {
                 return "Data inserção";
             }
-            case "nm_user": {
+            case "DS_USER": {
                 return "Usuário";
             }
-            case "isActive":{
+            case "IS_ACTIVE": {
                 return "Ativo";
             }
         }
@@ -933,7 +944,6 @@ public class DictionaryFrame extends javax.swing.JFrame {
             SwingUtilities.invokeLater(() -> {
                 getCmbBoxObjectType().setSelectedItem(selectTypeW);
             });
-
         }
     }
 
@@ -950,13 +960,13 @@ public class DictionaryFrame extends javax.swing.JFrame {
         String str = "";
         str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 1));
         getTxtObjectName().setText(str);
-        str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 2));
-        getCmbBoxObjectType().setSelectedItem(String.valueOf(str));
         str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 3));
-        getTxtAreaSQL().setText(str);
+        getCmbBoxObjectType().setSelectedItem(String.valueOf(str));
         str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 4));
-        getTxtObjectDate().setText(str);
+        getTxtAreaSQL().setText(str);
         str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 5));
+        getTxtObjectDate().setText(str);
+        str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 7));
         getTxtObjectUser().setText(str);
     }
 

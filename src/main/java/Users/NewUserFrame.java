@@ -171,7 +171,6 @@ public class NewUserFrame extends javax.swing.JFrame {
             try {
                 while (rs.next()) {
                     retorno = rs.getString("QTD");
-
                     salt = rs.getBytes("SALT");
                     interations = rs.getInt("INTERA");
                     key = rs.getInt("KEYL");
@@ -206,7 +205,6 @@ public class NewUserFrame extends javax.swing.JFrame {
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         getNewUserFrame().dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;

@@ -1,9 +1,16 @@
-CREATE TABLE `dictionary` (
-  `nr_sequence` int(255) NOT NULL AUTO_INCREMENT,
-  `ds_name` varchar(255) DEFAULT NULL,
-  `ie_type` varchar(255) DEFAULT NULL,
-  `ds_content` mediumtext,
-  `dt_insertion` date DEFAULT NULL,
-  `nm_user` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`nr_sequence`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `dictionary`;
+CREATE TABLE IF NOT EXISTS `dictionary` (
+  `NR_SEQUENCE` int(255) NOT NULL AUTO_INCREMENT,
+  `DS_NAME` varchar(255) NOT NULL,
+  `CD_TYPE` int(255) NOT NULL,
+  `DS_CONTENT` mediumtext,
+  `DT_INSERTION` date NOT NULL,
+  `CD_USER` int(255) NOT NULL,
+  `IS_ACTIVE` tinyint(1) NOT NULL,
+  PRIMARY KEY (`NR_SEQUENCE`),
+  UNIQUE KEY `nr_sequence_UNIQUE` (`NR_SEQUENCE`),
+  KEY `FK_OBJECT_TYPE_idx` (`CD_TYPE`),
+  KEY `FK_DIC_USER_idx` (`CD_USER`),
+  CONSTRAINT `FK_DIC_TYPE` FOREIGN KEY (`CD_TYPE`) REFERENCES `objects_types` (`CD_OBJECT_TYPE`),
+  CONSTRAINT `FK_DIC_USER` FOREIGN KEY (`CD_USER`) REFERENCES `application_user` (`nr_sequence`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;

@@ -1,7 +1,19 @@
-CREATE TABLE `application_user` (
-  `username` varchar(255) NOT NULL,
-  `saltpass` varbinary(255) NOT NULL,
-  `interations` decimal(10,0) NOT NULL,
-  `keylength` decimal(10,0) NOT NULL,
-  `userpassword` varbinary(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `application_user`;
+CREATE TABLE IF NOT EXISTS `application_user` (
+  `NR_SEQUENCE` int(255) NOT NULL AUTO_INCREMENT,
+  `USERNAME` varchar(255) NOT NULL,
+  `FULL_NAME` varchar(255) DEFAULT NULL,
+  `SALTPASS` varbinary(255) NOT NULL,
+  `INTERATIONS` decimal(10,0) NOT NULL,
+  `KEYLENGTH` decimal(10,0) NOT NULL,
+  `USER_PASSWORD` varbinary(255) NOT NULL,
+  `IS_ADMIN` tinyint(1) NOT NULL,
+  PRIMARY KEY (`NR_SEQUENCE`),
+  UNIQUE KEY `username_UNIQUE` (`USERNAME`),
+  UNIQUE KEY `nr_sequence_UNIQUE` (`NR_SEQUENCE`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+/*!40000 ALTER TABLE `application_user` DISABLE KEYS */;
+INSERT INTO `application_user` (`NR_SEQUENCE`, `USERNAME`, `FULL_NAME`, `SALTPASS`, `INTERATIONS`, `KEYLENGTH`, `USER_PASSWORD`, `IS_ADMIN`) VALUES
+	(2, 'gabriel', 'Gabriel Bartholomeu', _binary 0xA837D54D933881530DFD135FCE26, 4, 8, _binary 0xDD31CAFA3DB8565D, 1);
+/*!40000 ALTER TABLE `application_user` ENABLE KEYS */;

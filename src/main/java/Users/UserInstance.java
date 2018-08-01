@@ -12,18 +12,18 @@ package Users;
 public class UserInstance {
 
     private static UserInstance instance;
-    private static String usuarioAtivo;
+    private static int usuarioAtivo;
     private static boolean isAdmin;
 
     public static UserInstance getInstance() {
         return (instance == null) ? new UserInstance() : instance;
     }
 
-    public static void setUsuarioAtivo(String usuario) {
+    public static void setUsuarioAtivo(int usuario) {
         usuarioAtivo = usuario;
     }
 
-    public static String getUsuarioAtivo() {
+    public static int getUsuarioAtivo() {
         return usuarioAtivo;
     }
 

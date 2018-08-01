@@ -108,13 +108,13 @@ public class UserFrame extends javax.swing.JFrame {
 
     private String getColumnName(String nmColunaCampo) {
         switch (nmColunaCampo) {
-            case "username": {
+            case "USERNAME": {
                 return "Usuário";
             }
-            case "fullname": {
+            case "FULL_NAME": {
                 return "Nome Completo";
             }
-            case "isAdmin": {
+            case "IS_ADMIN": {
                 return "Administrador";
             }
         }

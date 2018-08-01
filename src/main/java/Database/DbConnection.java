@@ -71,7 +71,6 @@ public class DbConnection {
                     } else if (line.contains("serverusername##")) {
                         String usernameTxt = line.replace("serverusername##", "");
                         setUsername(usernameTxt);
-                        username = usernameTxt;
                         System.out.println(usernameTxt);
                     } else if (line.contains("serverpass##")) {
                         String passTxt = line.replace("serverpass##", "");

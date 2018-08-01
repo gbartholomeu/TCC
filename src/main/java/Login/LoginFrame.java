@@ -17,6 +17,7 @@ import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -135,17 +136,19 @@ public class LoginFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-//        Random r = new Random();
-//        byte[] salt = Cryptography.getSecuredByte();
-//        int interations = r.nextInt(10) + 1;
-//        int keyLength = r.nextInt(10) + 1;
-//        byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, keyLength, getTxtPassw().getPassword().toString());
-//        int retorno = DAO.insertIntoDatabase(Const.SQL.INSERT_USER.getSqlCode(), getTxtUser().getText(), salt, interations, keyLength, senhaCriptografia);
-//
-//        if (retorno == 0) {
-//            JOptionPane.showMessageDialog(this, "Usuário não cadastrado");
-//        }
+        /*Random r = new Random();
+        byte[] salt = Cryptography.getSecuredByte();
+        int interations = r.nextInt(10) + 1;
+        int keyLength = r.nextInt(10) + 1;
+        byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, keyLength, new String(getTxtPassw().getPassword()));
+        int retorno = DAO.insertIntoDatabase(Const.SQL.INSERT_USER.getSqlCode(), getTxtUser().getText(), "Gabriel Bartholomeu", salt, interations, keyLength, senhaCriptografia, 1);
+
+        if (retorno == 0) {
+            JOptionPane.showMessageDialog(this, "Usuário não cadastrado");
+        }*/
+
         String retorno = "";
+        int cdUser = -1;
         byte[] salt = null;
         int interations = 1;
         int key = 1;
@@ -156,13 +159,13 @@ public class LoginFrame extends javax.swing.JFrame {
             ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), getTxtUser().getText());
             try {
                 while (rs.next()) {
+                    cdUser = rs.getInt("NR_SEQUENCE");
                     retorno = rs.getString("QTD");
-
                     salt = rs.getBytes("SALT");
                     interations = rs.getInt("INTERA");
                     key = rs.getInt("KEYL");
                     password = rs.getBytes("PASS");
-                    isAdmin = rs.getInt("isAdmin");
+                    isAdmin = rs.getInt("ADMIN");
                 }
             } catch (SQLException ex) {
                 LOGGER.info(new StringBuilder().append("Falha na obtenção das configurações do usuário: ").append(ex).toString());
@@ -172,8 +175,8 @@ public class LoginFrame extends javax.swing.JFrame {
                 String passwordField = new String(getTxtPassw().getPassword());
                 byte[] hash = Cryptography.getEncryptedPassword(passwordField, salt, interations, key);
                 if (Arrays.equals(hash, password)) {
-                    UserInstance.setUsuarioAtivo(getTxtUser().getText());
-                    UserInstance.getInstance().setIsAdmin(isAdmin == 1);
+                    UserInstance.setUsuarioAtivo(cdUser);
+                    UserInstance.setIsAdmin(isAdmin == 1);
                     DictionaryFrame dic = new DictionaryFrame(getLoginFrame());
                     SwingUtilities.invokeLater(() -> (dic.setConfiguration()));
                     dic.setVisible(true);
