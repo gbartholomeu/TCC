@@ -31,6 +31,9 @@ public class Const {
                 + "DT_INSERTION DT_INSERTION, \n"
                 + "CD_USER CD_USER, \n"
                 + "GETUSERUSERNAME(CD_USER) DS_USER, \n"
+                + "DT_UPDATE DT_UPDATE, \n"
+                + "CD_USER_UPDATE CD_USER_UPDATE, \n"
+                + "GETUSERUSERNAME(CD_USER_UPDATE) DS_USER_UPDATE, \n"
                 + "IS_ACTIVE IS_ACTIVE \n"
                 + "FROM DICTIONARY;"),
         SELECT_ONLY_ACTIVE_DICTIONARY(
@@ -42,6 +45,9 @@ public class Const {
                 + "DT_INSERTION DT_INSERTION, \n"
                 + "CD_USER CD_USER, \n"
                 + "GETUSERUSERNAME(CD_USER) DS_USER, \n"
+                + "DT_UPDATE DT_UPDATE, \n"
+                + "CD_USER_UPDATE CD_USER_UPDATE, \n"
+                + "GETUSERUSERNAME(CD_USER_UPDATE) DS_USER_UPDATE, \n"
                 + "IS_ACTIVE IS_ACTIVE \n"
                 + "FROM DICTIONARY \n"
                 + "WHERE IS_ACTIVE = 1 \n"
@@ -55,6 +61,9 @@ public class Const {
                 + "DT_INSERTION DT_INSERTION, \n"
                 + "CD_USER CD_USER, \n"
                 + "GETUSERUSERNAME(CD_USER) DS_USER, \n"
+                + "DT_UPDATE DT_UPDATE, \n"
+                + "CD_USER_UPDATE CD_USER_UPDATE, \n"
+                + "GETUSERUSERNAME(CD_USER_UPDATE) DS_USER_UPDATE, \n"
                 + "IS_ACTIVE IS_ACTIVE \n"
                 + "FROM DICTIONARY \n"
                 + "WHERE IS_ACTIVE = 0;"),
@@ -75,10 +84,10 @@ public class Const {
                 + "SET SALTPASS = ?, INTERATIONS = ?, KEYLENGTH = ?, USER_PASSWORD = ? \n"
                 + "WHERE NR_SEQUENCE = ?;"),
         INSERT_OBJECT("INSERT INTO DICTIONARY \n"
-                + "(DS_NAME, CD_TYPE, DS_CONTENT, DT_INSERTION, CD_USER, IS_ACTIVE) \n"
-                + "VALUES (?, ?, ?, SYSDATE(), ?, 1);"),
+                + "(DS_NAME, CD_TYPE, DS_CONTENT, DT_INSERTION, CD_USER, DT_UPDATE, CD_USER_UPDATE, IS_ACTIVE) \n"
+                + "VALUES (?, ?, ?, SYSDATE(), ?, SYSDATE(), ?, 1);"),
         UPDATE_OBJECT("UPDATE DICTIONARY \n"
-                + "SET DS_CONTENT = ?, CD_USER = ? \n"
+                + "SET DS_CONTENT = ?, CD_USER_UPDATE = ?, DT_UPDATE = SYSDATE() \n"
                 + "WHERE NR_SEQUENCE = ? \n"),
         DELETE_OBJECT("DELETE FROM DICTIONARY \n"
                 + " WHERE NR_SEQUENCE = ?;"),

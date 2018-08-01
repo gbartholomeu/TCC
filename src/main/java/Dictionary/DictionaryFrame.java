@@ -461,7 +461,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 } catch (SQLException ex) {
                     Logger.getLogger(DictionaryFrame.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                int insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), cdObjectType, getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo());
+                int insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), cdObjectType, getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), UserInstance.getUsuarioAtivo());
                 if (insertDatabase == 0) {
                     JOptionPane.showMessageDialog(this, "Falha ao adicionar objeto");
                 } else {
@@ -809,6 +809,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
         }
+        getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(9));
         getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(6));
         getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(4));
         getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(2));
@@ -886,8 +887,14 @@ public class DictionaryFrame extends javax.swing.JFrame {
             case "DT_INSERTION": {
                 return "Data inserção";
             }
+            case "DT_UPDATE": {
+                return "Data atualização";
+            }
             case "DS_USER": {
-                return "Usuário";
+                return "Usuário criação";
+            }
+            case "DS_USER_UPDATE": {
+                return "Usuário atualização";
             }
             case "IS_ACTIVE": {
                 return "Ativo";
