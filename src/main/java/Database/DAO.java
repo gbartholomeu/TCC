@@ -23,7 +23,7 @@ public class DAO {
     private static ResultSet rs = null;
     private final static Logger LOGGER = Logger.getLogger(DAO.class.getName());
 
-    public static ResultSet selectFromDatabase(String sql, Object... args) {
+    public static Object selectFromDatabase(String sql, Object... args) {
         try {
             con = DbConnection.getConnection();
             stmt = con.prepareStatement(sql);
@@ -47,8 +47,9 @@ public class DAO {
             rs = stmt.executeQuery();
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder("Falha ao executar SELECT da base: ").append(ex).toString());
+            return ex.toString();
         }
-        return rs;
+        return (ResultSet) rs;
     }
 
     public static int insertIntoDatabase(String sql, Object... args) {

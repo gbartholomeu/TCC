@@ -453,25 +453,27 @@ public class DictionaryFrame extends javax.swing.JFrame {
         if (isEditingMode() || isCreatingMode()) {
             if ("".equalsIgnoreCase(getTxtObjectDate().getText())) {
                 int cdObjectType = -1;
-                ResultSet objectType = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_OBJECT_TYPES_CODE.getSqlCode(), getCmbBoxObjectType().getItemAt(getCmbBoxObjectType().getSelectedIndex()));
-                try {
-                    if (objectType.next()) {
-                        cdObjectType = objectType.getInt("object_code");
+                Object objectType = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_OBJECT_TYPES_CODE.getSqlCode(), getCmbBoxObjectType().getItemAt(getCmbBoxObjectType().getSelectedIndex()));
+                if (objectType instanceof ResultSet) {
+                    try {
+                        if (((ResultSet) objectType).next()) {
+                            cdObjectType = ((ResultSet) objectType).getInt("object_code");
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(DictionaryFrame.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                } catch (SQLException ex) {
-                    Logger.getLogger(DictionaryFrame.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                int insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), cdObjectType, getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), UserInstance.getUsuarioAtivo());
-                if (insertDatabase == 0) {
-                    JOptionPane.showMessageDialog(this, "Falha ao adicionar objeto");
-                } else {
-                    Utilities.objectEnabledControl(false, getBtnSave(), getBtnUndo());
-                    Utilities.objectEnabledControl(true, getBtnNew(), getBtnDetail());
-                    setBtnInactivateEnabledWithValidation(true);
-                    fillObjectsTable(false);
-                    int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
-                    getTblObjects().setRowSelectionInterval(lastRow, lastRow);
-                    fillFieldsFromObject();
+                    int insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), cdObjectType, getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), UserInstance.getUsuarioAtivo());
+                    if (insertDatabase == 0) {
+                        JOptionPane.showMessageDialog(this, "Falha ao adicionar objeto");
+                    } else {
+                        Utilities.objectEnabledControl(false, getBtnSave(), getBtnUndo());
+                        Utilities.objectEnabledControl(true, getBtnNew(), getBtnDetail());
+                        setBtnInactivateEnabledWithValidation(true);
+                        fillObjectsTable(false);
+                        int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
+                        getTblObjects().setRowSelectionInterval(lastRow, lastRow);
+                        fillFieldsFromObject();
+                    }
                 }
             } else {
                 int insertDatabase = DAO.updateRegisterDatabase(Constantes.Const.SQL.UPDATE_OBJECT.getSqlCode(), getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
@@ -726,6 +728,11 @@ public class DictionaryFrame extends javax.swing.JFrame {
             }
         });
 
+        getTblObjects().getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
+            EventQueue.invokeLater(() -> {
+                getBtnInactivate().setText(((Boolean) getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 11)) ? "Inativar" : "Ativar");
+            });
+        });
         getTblObjectHistory().getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             EventQueue.invokeLater(() -> {
                 getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 2)));
@@ -763,7 +770,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }
 
     private void fillObjectsTable(boolean selectFirstRow) {
-        ResultSet rs = null;
+        Object rs = null;
         switch (getSearchMode()) {
             case 'T': {
                 rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICTIONARY.getSqlCode());
@@ -778,44 +785,45 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 break;
             }
         }
-
-        while (getTblObjects().getRowCount() > 0) {
-            ((DefaultTableModel) getTblObjects().getModel()).removeRow(0);
-        }
-        ((DefaultTableModel) getTblObjects().getModel()).setColumnCount(0);
-
-        ResultSetMetaData rsMd = null;
-        int columns = 0;
-        try {
-            rsMd = (ResultSetMetaData) rs.getMetaData();
-            columns = rsMd.getColumnCount();
-
-            for (int i = 1; i <= columns; i++) {
-                ((DefaultTableModel) getTblObjects().getModel()).addColumn(getColumnName(rsMd.getColumnName(i)));
+        if (rs instanceof ResultSet) {
+            while (getTblObjects().getRowCount() > 0) {
+                ((DefaultTableModel) getTblObjects().getModel()).removeRow(0);
             }
-        } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha na adição das colunas ao objeto de tabela: ").append(ex).toString());
-        }
+            ((DefaultTableModel) getTblObjects().getModel()).setColumnCount(0);
 
-        try {
-            while (rs.next()) {
-                Object[] row = new Object[columns];
+            ResultSetMetaData rsMd = null;
+            int columns = 0;
+            try {
+                rsMd = (ResultSetMetaData) ((ResultSet) rs).getMetaData();
+                columns = rsMd.getColumnCount();
+
                 for (int i = 1; i <= columns; i++) {
-                    row[i - 1] = rs.getObject(i);
+                    ((DefaultTableModel) getTblObjects().getModel()).addColumn(getColumnName(rsMd.getColumnLabel(i)));
                 }
-
-                ((DefaultTableModel) getTblObjects().getModel()).insertRow(rs.getRow() - 1, row);
+            } catch (SQLException ex) {
+                LOGGER.info(new StringBuilder("Falha na adição das colunas ao objeto de tabela: ").append(ex).toString());
             }
-        } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
-        }
-        getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(9));
-        getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(6));
-        getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(4));
-        getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(2));
-        adjustTableColumns(getTblObjects().getColumnModel());
-        if (selectFirstRow) {
-            getTblObjects().getSelectionModel().setSelectionInterval(0, 0);
+
+            try {
+                while (((ResultSet) rs).next()) {
+                    Object[] row = new Object[columns];
+                    for (int i = 1; i <= columns; i++) {
+                        row[i - 1] = ((ResultSet) rs).getObject(i);
+                    }
+
+                    ((DefaultTableModel) getTblObjects().getModel()).insertRow(((ResultSet) rs).getRow() - 1, row);
+                }
+            } catch (SQLException ex) {
+                LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
+            }
+            getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(9));
+            getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(6));
+            getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(4));
+            getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(2));
+            adjustTableColumns(getTblObjects().getColumnModel());
+            if (selectFirstRow) {
+                getTblObjects().getSelectionModel().setSelectionInterval(0, 0);
+            }
         }
     }
 
@@ -831,45 +839,46 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }
 
     private void fillHistoryTable(boolean selectFirstRow) {
-        ResultSet rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICTIONARY_HISTORY.getSqlCode(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
-
-        while (getTblObjectHistory().getRowCount() > 0) {
-            ((DefaultTableModel) getTblObjectHistory().getModel()).removeRow(0);
-        }
-        ((DefaultTableModel) getTblObjectHistory().getModel()).setColumnCount(0);
-
-        ResultSetMetaData rsMd = null;
-        int columns = 0;
-        try {
-            rsMd = (ResultSetMetaData) rs.getMetaData();
-            columns = rsMd.getColumnCount();
-
-            for (int i = 1; i <= columns; i++) {
-                ((DefaultTableModel) getTblObjectHistory().getModel()).addColumn(getColumnName(rsMd.getColumnName(i)));
+        Object rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICTIONARY_HISTORY.getSqlCode(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
+        if (rs instanceof ResultSet) {
+            while (getTblObjectHistory().getRowCount() > 0) {
+                ((DefaultTableModel) getTblObjectHistory().getModel()).removeRow(0);
             }
-        } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha na adição das colunas ao objeto de tabela: ").append(ex).toString());
-        }
+            ((DefaultTableModel) getTblObjectHistory().getModel()).setColumnCount(0);
 
-        try {
-            while (rs.next()) {
-                Object[] row = new Object[columns];
+            ResultSetMetaData rsMd = null;
+            int columns = 0;
+            try {
+                rsMd = (ResultSetMetaData) ((ResultSet) rs).getMetaData();
+                columns = rsMd.getColumnCount();
+
                 for (int i = 1; i <= columns; i++) {
-                    row[i - 1] = rs.getObject(i);
+                    ((DefaultTableModel) getTblObjectHistory().getModel()).addColumn(getColumnName(rsMd.getColumnLabel(i)));
                 }
-
-                ((DefaultTableModel) getTblObjectHistory().getModel()).insertRow(rs.getRow() - 1, row);
+            } catch (SQLException ex) {
+                LOGGER.info(new StringBuilder("Falha na adição das colunas ao objeto de tabela: ").append(ex).toString());
             }
-        } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
-        }
 
-        getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(4));
-        getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(2));
-        getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
-        adjustTableColumns(getTblObjectHistory().getColumnModel());
-        if (selectFirstRow) {
-            getTblObjectHistory().getSelectionModel().setSelectionInterval(0, 0);
+            try {
+                while (((ResultSet) rs).next()) {
+                    Object[] row = new Object[columns];
+                    for (int i = 1; i <= columns; i++) {
+                        row[i - 1] = ((ResultSet) rs).getObject(i);
+                    }
+
+                    ((DefaultTableModel) getTblObjectHistory().getModel()).insertRow(((ResultSet) rs).getRow() - 1, row);
+                }
+            } catch (SQLException ex) {
+                LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
+            }
+
+            getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(4));
+            getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(2));
+            getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
+            adjustTableColumns(getTblObjectHistory().getColumnModel());
+            if (selectFirstRow) {
+                getTblObjectHistory().getSelectionModel().setSelectionInterval(0, 0);
+            }
         }
     }
 
@@ -898,6 +907,12 @@ public class DictionaryFrame extends javax.swing.JFrame {
             }
             case "IS_ACTIVE": {
                 return "Ativo";
+            }
+            case "DT_INSERTION_HISTORY": {
+                return "Data histórico";
+            }
+            case "DS_USER_HIST": {
+                return "Usuário modificação";
             }
         }
         return "Error";
@@ -930,27 +945,29 @@ public class DictionaryFrame extends javax.swing.JFrame {
         if (selectRecord && getCmbBoxObjectType().getSelectedItem() != null) {
             selectType = String.valueOf(getCmbBoxObjectType().getSelectedItem());
         }
-        ResultSet objectTypes = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_OBJECT_TYPES.getSqlCode());
-        DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
-        List<String> types = new ArrayList<>();
-        try {
-            while (objectTypes.next()) {
-                types.add(objectTypes.getString("ds_object_type"));
+        Object objectTypes = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_OBJECT_TYPES.getSqlCode());
+        if (objectTypes instanceof ResultSet) {
+            DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
+            List<String> types = new ArrayList<>();
+            try {
+                while (((ResultSet) objectTypes).next()) {
+                    types.add(((ResultSet) objectTypes).getString("ds_object_type"));
+                }
+            } catch (SQLException ex) {
+                LOGGER.info(new StringBuilder().append("Falha na obtenção dos tipos de objeto do banco: ").append(ex).toString());
             }
-        } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder().append("Falha na obtenção dos tipos de objeto do banco: ").append(ex).toString());
-        }
-        for (final String i : types) {
-            EventQueue.invokeLater(() -> {
-                comboBoxModel.addElement(i);
-            });
-        }
-        getCmbBoxObjectType().setModel(comboBoxModel);
-        if (selectRecord) {
-            final String selectTypeW = selectType;
-            SwingUtilities.invokeLater(() -> {
-                getCmbBoxObjectType().setSelectedItem(selectTypeW);
-            });
+            for (final String i : types) {
+                EventQueue.invokeLater(() -> {
+                    comboBoxModel.addElement(i);
+                });
+            }
+            getCmbBoxObjectType().setModel(comboBoxModel);
+            if (selectRecord) {
+                final String selectTypeW = selectType;
+                SwingUtilities.invokeLater(() -> {
+                    getCmbBoxObjectType().setSelectedItem(selectTypeW);
+                });
+            }
         }
     }
 

@@ -68,41 +68,43 @@ public class UserFrame extends javax.swing.JFrame {
     }
 
     private void fillObjectsTable(boolean selectFirstRow) {
-        ResultSet rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_USERS.getSqlCode());
+        Object rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_USERS.getSqlCode());
+        if (rs instanceof ResultSet) {
 
-        while (getTblUser().getRowCount() > 0) {
-            ((DefaultTableModel) getTblUser().getModel()).removeRow(0);
-        }
-        ((DefaultTableModel) getTblUser().getModel()).setColumnCount(0);
-
-        ResultSetMetaData rsMd = null;
-        int columns = 0;
-        try {
-            rsMd = (ResultSetMetaData) rs.getMetaData();
-            columns = rsMd.getColumnCount();
-
-            for (int i = 1; i <= columns; i++) {
-                ((DefaultTableModel) getTblUser().getModel()).addColumn(getColumnName(rsMd.getColumnName(i)));
+            while (getTblUser().getRowCount() > 0) {
+                ((DefaultTableModel) getTblUser().getModel()).removeRow(0);
             }
-        } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha na adição das colunas ao objeto de tabela: ").append(ex).toString());
-        }
+            ((DefaultTableModel) getTblUser().getModel()).setColumnCount(0);
 
-        try {
-            while (rs.next()) {
-                Object[] row = new Object[columns];
+            ResultSetMetaData rsMd = null;
+            int columns = 0;
+            try {
+                rsMd = (ResultSetMetaData) ((ResultSet) rs).getMetaData();
+                columns = rsMd.getColumnCount();
+
                 for (int i = 1; i <= columns; i++) {
-                    row[i - 1] = rs.getObject(i);
+                    ((DefaultTableModel) getTblUser().getModel()).addColumn(getColumnName(rsMd.getColumnLabel(i)));
                 }
-
-                ((DefaultTableModel) getTblUser().getModel()).insertRow(rs.getRow() - 1, row);
+            } catch (SQLException ex) {
+                LOGGER.info(new StringBuilder("Falha na adição das colunas ao objeto de tabela: ").append(ex).toString());
             }
-        } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
-        }
-        adjustTableColumns(getTblUser().getColumnModel());
-        if (selectFirstRow) {
-            getTblUser().getSelectionModel().setSelectionInterval(0, 0);
+
+            try {
+                while (((ResultSet) rs).next()) {
+                    Object[] row = new Object[columns];
+                    for (int i = 1; i <= columns; i++) {
+                        row[i - 1] = ((ResultSet) rs).getObject(i);
+                    }
+
+                    ((DefaultTableModel) getTblUser().getModel()).insertRow(((ResultSet) rs).getRow() - 1, row);
+                }
+            } catch (SQLException ex) {
+                LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
+            }
+            adjustTableColumns(getTblUser().getColumnModel());
+            if (selectFirstRow) {
+                getTblUser().getSelectionModel().setSelectionInterval(0, 0);
+            }
         }
     }
 

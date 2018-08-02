@@ -71,9 +71,9 @@ public class Const {
                 "SELECT NR_SEQUENCE NR_SEQUENCE, \n"
                 + "NR_SEQ_OBJECT NR_SEQ_OBJECT, \n"
                 + "DS_CONTENT DS_CONTENT, \n"
-                + "DT_INSERTION DT_INSERTION, \n"
+                + "DT_INSERTION DT_INSERTION_HISTORY, \n"
                 + "CD_USER CD_USER, \n"
-                + "GETUSERUSERNAME(CD_USER) DS_USER \n"
+                + "GETUSERUSERNAME(CD_USER) DS_USER_HIST \n"
                 + "FROM DICTIONARY_HISTORY \n"
                 + "WHERE NR_SEQ_OBJECT = ? \n"
                 + "ORDER BY NR_SEQUENCE DESC;"),
