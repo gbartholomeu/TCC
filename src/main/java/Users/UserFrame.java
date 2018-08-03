@@ -7,6 +7,7 @@ package Users;
 
 import Database.DAO;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
+import java.awt.Component;
 import java.awt.EventQueue;
 import static java.awt.Frame.MAXIMIZED_BOTH;
 import java.awt.Rectangle;
@@ -15,12 +16,17 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Logger;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import sun.java2d.SunGraphicsEnvironment;
 
@@ -33,6 +39,22 @@ public class UserFrame extends javax.swing.JFrame {
     private final JFrame parentFrame;
     private final static Logger LOGGER = Logger.getLogger(UserFrame.class.getName());
 
+    private final TableCellRenderer tableCellRenderer = new DefaultTableCellRenderer() {
+
+        SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            if (value instanceof Boolean) {
+                JCheckBox isActive = new JCheckBox();
+                isActive.setSelected((Boolean) value);
+                return isActive;
+            }
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        }
+    };
+
     /**
      * Creates new form UserFrame
      *
@@ -40,7 +62,12 @@ public class UserFrame extends javax.swing.JFrame {
      */
     public UserFrame(JFrame parentFrame) {
         initComponents();
+        turnOffTableEditable();
         this.parentFrame = parentFrame;
+    }
+
+    private void turnOffTableEditable() {
+        getTblUser().setDefaultEditor(Object.class, null);
     }
 
     public void setConfiguration() {
@@ -101,6 +128,7 @@ public class UserFrame extends javax.swing.JFrame {
             } catch (SQLException ex) {
                 LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
             }
+            getTblUser().getColumnModel().getColumn(2).setCellRenderer(tableCellRenderer);
             adjustTableColumns(getTblUser().getColumnModel());
             if (selectFirstRow) {
                 getTblUser().getSelectionModel().setSelectionInterval(0, 0);
@@ -192,8 +220,10 @@ public class UserFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_popUpItemNewUserActionPerformed
 
     private void tblUserMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblUserMouseReleased
-        if (evt.getButton() == MouseEvent.BUTTON3) {
-            getPopUpUser().show(this, evt.getX() + 20, evt.getY() + 20);
+        if (UserInstance.isAdmin()) {
+            if (evt.getButton() == MouseEvent.BUTTON3) {
+                getPopUpUser().show(this, evt.getX() + 20, evt.getY() + 20);
+            }
         }
     }//GEN-LAST:event_tblUserMouseReleased
 

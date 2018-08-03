@@ -11,22 +11,29 @@ import Users.UserInstance;
 import Utils.Utilities;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -40,7 +47,9 @@ import javax.swing.SwingUtilities;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import sun.java2d.SunGraphicsEnvironment;
 
@@ -59,6 +68,26 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private boolean isEditingMode = false;
     private boolean isCreatingMode = false;
     private char searchMode = 'A';
+
+    private final TableCellRenderer tableCellRenderer = new DefaultTableCellRenderer() {
+
+        SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            if (value instanceof Date) {
+                value = f.format(value);
+            }
+            if (value instanceof Boolean) {
+                JCheckBox isActive = new JCheckBox();
+                isActive.setSelected((Boolean) value);
+                return isActive;
+            }
+
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        }
+    };
 
     /**
      * Creates new form DictionaryFrame
@@ -738,6 +767,16 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 2)));
             });
         });
+        getTblObjects().addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+                JTable table = (JTable) mouseEvent.getSource();
+                Point point = mouseEvent.getPoint();
+                int row = table.rowAtPoint(point);
+                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
+                    getBtnSave().doClick();
+                }
+            }
+        });
         fillObjectsTable();
         setButtonsConfiguration();
         setCardLayout((CardLayout) getPnlGrid().getLayout());
@@ -757,7 +796,6 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 getParentFrame().dispose();
             }
         });
-        Utilities.objectVisibilityControl(UserInstance.getInstance().isAdmin(), getMenuItemUser());
     }
 
     private void setButtonsConfiguration() {
@@ -771,6 +809,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
     private void fillObjectsTable(boolean selectFirstRow) {
         Object rs = null;
+
         switch (getSearchMode()) {
             case 'T': {
                 rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICTIONARY.getSqlCode());
@@ -816,6 +855,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
             } catch (SQLException ex) {
                 LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
             }
+            getTblObjects().getColumnModel().getColumn(5).setCellRenderer(tableCellRenderer);
+            getTblObjects().getColumnModel().getColumn(8).setCellRenderer(tableCellRenderer);
+            getTblObjects().getColumnModel().getColumn(11).setCellRenderer(tableCellRenderer);
             getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(9));
             getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(6));
             getTblObjects().getColumnModel().removeColumn(getTblObjects().getColumnModel().getColumn(4));
@@ -871,7 +913,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
             } catch (SQLException ex) {
                 LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
             }
-
+            getTblObjectHistory().getColumnModel().getColumn(3).setCellRenderer(tableCellRenderer);
             getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(4));
             getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(2));
             getTblObjectHistory().getColumnModel().removeColumn(getTblObjectHistory().getColumnModel().getColumn(1));
