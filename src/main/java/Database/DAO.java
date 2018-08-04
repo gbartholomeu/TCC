@@ -48,12 +48,12 @@ public class DAO {
             rs = stmt.executeQuery();
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder(Expressions.DAO.SELECT_BASE_EX.getExpression()).append(ex).toString());
-            return ex.toString();
+            return ex.getStackTrace()[0].toString();
         }
         return (ResultSet) rs;
     }
 
-    public static int insertIntoDatabase(String sql, Object... args) {
+    public static Object insertIntoDatabase(String sql, Object... args) {
         int updateReturn = 0;
         try {
             con = DbConnection.getConnection();
@@ -77,11 +77,12 @@ public class DAO {
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder(Expressions.DAO.INSERT_BASE_EX.getExpression()).append(ex).toString());
+            return ex.getStackTrace()[0].toString();
         }
-        return updateReturn;
+        return (int) updateReturn;
     }
 
-    public static int updateRegisterDatabase(String sql, Object... args) {
+    public static Object updateRegisterDatabase(String sql, Object... args) {
         int updateReturn = 0;
         try {
             con = DbConnection.getConnection();
@@ -105,11 +106,12 @@ public class DAO {
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder(Expressions.DAO.UPDATE_BASE_EX.getExpression()).append(ex).toString());
+            return ex.getStackTrace()[0].toString();
         }
-        return updateReturn;
+        return (int) updateReturn;
     }
 
-    public static int deleteFromDatabase(String sql, Object... args) {
+    public static Object deleteFromDatabase(String sql, Object... args) {
         int updateReturn = 0;
         try {
             con = DbConnection.getConnection();
@@ -133,8 +135,9 @@ public class DAO {
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
             LOGGER.info(new StringBuilder(Expressions.DAO.DELETE_BASE_EX.getExpression()).append(ex).toString());
+            return ex.getStackTrace()[0].toString();
         }
-        return updateReturn;
+        return (int) updateReturn;
     }
 
     private static void printQuery() {

@@ -51,7 +51,12 @@ public class Expressions {
         NO_USER("Por favor insira um usuário."),
         EXISTING_USER("Usuário já cadastrado."),
         NEW_USER_SUCESS("Usuário cadastrado com sucesso."),
-        NEW_USER_FAIL("Usuário não cadastrado.");
+        NEW_USER_FAIL("Usuário não cadastrado."),
+        GET_PW_FAIL("Falha ao verificar senha atual."),
+        NEW_PW_CONTENT_FAIL("A nova senha não pode ser igual a senha atual."),
+        NEW_PW_FAIL("Falha ao alterar a senha."),
+        NEW_PW_SUCESS("Senha alterada com sucesso."),
+        CURRENT_PW_WRONG("Senha atual está incorreta.");
         
         private final String expression;
 
@@ -69,8 +74,9 @@ public class Expressions {
         INSERT_RETURN_FAIL("Falha ao inserir registro no banco de dados."),
         UPDATE_RETURN_FAIL("Falha ao atualizar objeto."),
         DELETE_RETURN_FAIL("Falha ao excluir objeto."),
-        VALIDATE_RETURN_FAIL("Falha ao validar objeto"),
-        VALIDATE_RETURN_OK("Objeto validado com sucesso");
+        VALIDATE_RETURN_FAIL("Falha ao validar objeto, verifique a sintaxe."),
+        VALIDATE_RETURN_OK("Objeto validado com sucesso."),
+        INACTIVATE_RETUNR_OK("Objecto inativado com sucesso.");
 
         private final String expression;
 

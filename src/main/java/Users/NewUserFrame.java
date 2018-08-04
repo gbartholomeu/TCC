@@ -189,13 +189,15 @@ public class NewUserFrame extends javax.swing.JFrame {
                     interations = r.nextInt(10) + 1;
                     key = r.nextInt(10) + 1;
                     byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, key, new String(getTxtPassw().getPassword()));
-                    int retornoInsert = DAO.insertIntoDatabase(Const.SQL.INSERT_USER.getSqlCode(), getTxtUser().getText(), getTxtFullname().getText(), salt, interations, key, senhaCriptografia, getCheckBoxAdmin().isSelected() ? 1 : 0);
-                    if (retornoInsert == 0) {
-                        JOptionPane.showMessageDialog(this, Expressions.USER.NEW_USER_FAIL.getExpression());
-                    } else {
-                        JOptionPane.showMessageDialog(this, Expressions.USER.NEW_USER_SUCESS.getExpression());
-                        this.dispose();
-                        ((UserFrame) getParentFrame()).fillObjectsTable();
+                    Object retornoInsert = DAO.insertIntoDatabase(Const.SQL.INSERT_USER.getSqlCode(), getTxtUser().getText(), getTxtFullname().getText(), salt, interations, key, senhaCriptografia, getCheckBoxAdmin().isSelected() ? 1 : 0);
+                    if (retornoInsert instanceof Integer) {
+                        if ((int) retornoInsert == 0) {
+                            JOptionPane.showMessageDialog(this, Expressions.USER.NEW_USER_FAIL.getExpression());
+                        } else {
+                            JOptionPane.showMessageDialog(this, Expressions.USER.NEW_USER_SUCESS.getExpression());
+                            this.dispose();
+                            ((UserFrame) getParentFrame()).fillObjectsTable();
+                        }
                     }
                 }
             }

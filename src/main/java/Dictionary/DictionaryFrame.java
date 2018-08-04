@@ -8,8 +8,10 @@ package Dictionary;
 import Constantes.Const;
 import Constantes.Expressions;
 import Database.DAO;
+import Users.NewUserFrame;
 import Users.UserFrame;
 import Users.UserInstance;
+import Users.UserNewPassword;
 import Utils.Utilities;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.awt.CardLayout;
@@ -457,6 +459,11 @@ public class DictionaryFrame extends javax.swing.JFrame {
         menuUser.add(menuItemUser);
 
         menuPassword.setText("Trocar senha");
+        menuPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuPasswordActionPerformed(evt);
+            }
+        });
         menuUser.add(menuPassword);
 
         menuBar.add(menuUser);
@@ -483,19 +490,44 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         if (isEditingMode() || isCreatingMode()) {
             if ("".equalsIgnoreCase(getTxtObjectDate().getText())) {
-                int cdObjectType = -1;
-                Object objectType = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_OBJECT_TYPES_CODE.getSqlCode(), getCmbBoxObjectType().getItemAt(getCmbBoxObjectType().getSelectedIndex()));
-                if (objectType instanceof ResultSet) {
-                    try {
-                        if (((ResultSet) objectType).next()) {
-                            cdObjectType = ((ResultSet) objectType).getInt("object_code");
+                if (createObjectInDatabase() == 2) {
+
+                    int cdObjectType = -1;
+                    Object objectType = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_OBJECT_TYPES_CODE.getSqlCode(), getCmbBoxObjectType().getItemAt(getCmbBoxObjectType().getSelectedIndex()));
+                    if (objectType instanceof ResultSet) {
+                        try {
+                            if (((ResultSet) objectType).next()) {
+                                cdObjectType = ((ResultSet) objectType).getInt("object_code");
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(DictionaryFrame.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                    } catch (SQLException ex) {
-                        Logger.getLogger(DictionaryFrame.class.getName()).log(Level.SEVERE, null, ex);
+                        Object insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), cdObjectType, getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), UserInstance.getUsuarioAtivo());
+                        if (insertDatabase instanceof Integer) {
+                            if ((int) insertDatabase == 0) {
+                                JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.INSERT_RETURN_FAIL.getExpression());
+                            } else {
+                                Utilities.objectEnabledControl(false, getBtnSave(), getBtnUndo());
+                                Utilities.objectEnabledControl(true, getBtnNew(), getBtnDetail());
+                                setBtnInactivateEnabledWithValidation(true);
+                                fillObjectsTable(false);
+                                int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
+                                getTblObjects().setRowSelectionInterval(lastRow, lastRow);
+                                fillFieldsFromObject();
+                                JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.VALIDATE_RETURN_OK.getExpression());
+                            }
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.SELECT_RETURN_FAIL.getExpression() + (String) objectType);
                     }
-                    int insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), cdObjectType, getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), UserInstance.getUsuarioAtivo());
-                    if (insertDatabase == 0) {
-                        JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.INSERT_RETURN_FAIL.getExpression());
+                } else {
+                    JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.VALIDATE_RETURN_FAIL.getExpression());
+                }
+            } else if (createObjectInDatabase() == 2) {
+                Object insertDatabase = DAO.updateRegisterDatabase(Constantes.Const.SQL.UPDATE_OBJECT.getSqlCode(), getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
+                if (insertDatabase instanceof Integer) {
+                    if ((int) insertDatabase == 0) {
+                        JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.UPDATE_RETURN_FAIL.getExpression());
                     } else {
                         Utilities.objectEnabledControl(false, getBtnSave(), getBtnUndo());
                         Utilities.objectEnabledControl(true, getBtnNew(), getBtnDetail());
@@ -506,24 +538,11 @@ public class DictionaryFrame extends javax.swing.JFrame {
                         fillFieldsFromObject();
                     }
                 }
-            } else {
-                int insertDatabase = DAO.updateRegisterDatabase(Constantes.Const.SQL.UPDATE_OBJECT.getSqlCode(), getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
-                if (insertDatabase == 0) {
-                    JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.UPDATE_RETURN_FAIL.getExpression());
-                } else {
-                    Utilities.objectEnabledControl(false, getBtnSave(), getBtnUndo());
-                    Utilities.objectEnabledControl(true, getBtnNew(), getBtnDetail());
-                    setBtnInactivateEnabledWithValidation(true);
-                    fillObjectsTable(false);
-                    int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
-                    getTblObjects().setRowSelectionInterval(lastRow, lastRow);
-                    fillFieldsFromObject();
-                }
+                changeCard();
+                setIsEditingMode(false);
+                setIsCreatingMode(false);
+                JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.VALIDATE_RETURN_OK.getExpression());
             }
-            validateObject();
-            changeCard();
-            setIsEditingMode(false);
-            setIsCreatingMode(false);
         } else {
             setIsEditingMode(true);
             Utilities.objectEnabledControl(false, getTxtObjectName(), getCmbBoxObjectType(), getBtnNew(), getBtnDetail());
@@ -556,24 +575,31 @@ public class DictionaryFrame extends javax.swing.JFrame {
         fillFieldsFromObject();
         loadObjectTypeComboBox(true);
         controlEditButton();
+        Utilities.objectEnabledControl((Boolean) getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 11), getBtnSave());
     }//GEN-LAST:event_btnDetailActionPerformed
 
     private void btnInactivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInactivateActionPerformed
         int ieConfrma = JOptionPane.showConfirmDialog(getDicFrame(), "Deseja inativar o objeto " + getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 1) + "?", "", JOptionPane.YES_NO_OPTION);
-
         if (ieConfrma == JOptionPane.YES_OPTION) {
-            int deleteFromDatabase = DAO.updateRegisterDatabase(Constantes.Const.SQL.UPDATE_OBJECT_FLAG.getSqlCode(), 0, getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
-            if (deleteFromDatabase == 0) {
-                JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.UPDATE_RETURN_FAIL.getExpression());
-            } else {
-                if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
-                    changeCard();
+            if (deleteObjectInDatabase() == 0) {
+                Object deleteFromDatabase = DAO.updateRegisterDatabase(Constantes.Const.SQL.UPDATE_OBJECT_FLAG.getSqlCode(), 0, getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
+                if (deleteFromDatabase instanceof Integer) {
+                    if ((int) deleteFromDatabase == 0) {
+                        JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.UPDATE_RETURN_FAIL.getExpression());
+                    } else {
+                        if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
+                            changeCard();
+                        }
+                        fillObjectsTable();
+                        int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
+                        getTblObjects().setRowSelectionInterval(lastRow, lastRow);
+                        Utilities.objectEnabledControl(getTblObjects().getRowCount() > 0, getBtnDetail());
+                        setBtnInactivateEnabledWithValidation(getTblObjects().getRowCount() > 0);
+                        JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.INACTIVATE_RETUNR_OK.getExpression());
+                    }
                 }
-                fillObjectsTable();
-                int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
-                getTblObjects().setRowSelectionInterval(lastRow, lastRow);
-                Utilities.objectEnabledControl(getTblObjects().getRowCount() > 0, getBtnDetail());
-                setBtnInactivateEnabledWithValidation(getTblObjects().getRowCount() > 0);
+            } else {
+                JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.DELETE_RETURN_FAIL.getExpression());
             }
         }
     }//GEN-LAST:event_btnInactivateActionPerformed
@@ -638,6 +664,12 @@ public class DictionaryFrame extends javax.swing.JFrame {
         fillObjectsTable();
     }//GEN-LAST:event_onlyInactiveJMIActionPerformed
 
+    private void menuPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPasswordActionPerformed
+        UserNewPassword userPwFr = new UserNewPassword(getDicFrame());
+        SwingUtilities.invokeLater(() -> (userPwFr.setConfiguration()));
+        Utilities.objectVisibilityControl(true, userPwFr);
+    }//GEN-LAST:event_menuPasswordActionPerformed
+
     private void objectsMenuItem(MouseEvent evt) {
         if (evt.getButton() == MouseEvent.BUTTON3 && getTblObjects().getSelectedRow() > -1) {
             getOnlyActiveJMI().setVisible(getSearchMode() != 'A');
@@ -648,17 +680,41 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }
 
     private void validateObject() {
-        int delete = DAO.updateRegisterDatabase(DictionaryFrameController.getDropClause(getTxtObjectName().getText(), isProcedure(), isFunction(), isTrigger()));
-        if (delete == 1) {
-            JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.DELETE_RETURN_FAIL.getExpression());
+        int status = createObjectInDatabase();
+        switch (status) {
+            case 0: {
+                JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.DELETE_RETURN_FAIL.getExpression());
+                break;
+            }
+            case 1: {
+                JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.VALIDATE_RETURN_FAIL.getExpression());
+                break;
+            }
+            case 2: {
+                JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.VALIDATE_RETURN_OK.getExpression());
+            }
         }
+    }
 
-        int i = DAO.updateRegisterDatabase(getTxtAreaSQL().getText());
-        if (i == 1) {
-            JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.VALIDATE_RETURN_FAIL.getExpression());
-        } else {
-            JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.VALIDATE_RETURN_OK.getExpression());
+    private int deleteObjectInDatabase() {
+        Object delete = DAO.updateRegisterDatabase(DictionaryFrameController.getDropClause(getTxtObjectName().getText(), isProcedure(), isFunction(), isTrigger()));
+        if (delete instanceof Integer) {
+            if ((int) delete == 0) {
+                return 0;
+            }
         }
+        return -1;
+    }
+
+    private int createObjectInDatabase() {
+        if (deleteObjectInDatabase() == 0) {
+            return 0;
+        }
+        Object creating = DAO.updateRegisterDatabase(getTxtAreaSQL().getText());
+        if (creating instanceof Integer) {
+            return (int) creating == 1 ? 1 : 2;
+        }
+        return -1;
     }
 
     private void callCreateTemplate() {
@@ -747,6 +803,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         getTblObjects().getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             EventQueue.invokeLater(() -> {
                 getBtnInactivate().setText(((Boolean) getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 11)) ? Expressions.COMPONENTS.INACTIVATE.getExpression() : Expressions.COMPONENTS.ACTIVATE.getExpression());
+                Utilities.objectEnabledControl((Boolean) getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 11), getBtnSave());
             });
         });
         getTblObjectHistory().getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {

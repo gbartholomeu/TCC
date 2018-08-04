@@ -22,6 +22,14 @@ public class Const {
                 + "IS_ADMIN ADMIN  \n"
                 + "FROM APPLICATION_USER \n"
                 + "WHERE USERNAME = ?;"),
+        SELECT_USER_PW(
+                "SELECT 1 QTD, \n"
+                + "SALTPASS SALT, \n"
+                + "INTERATIONS INTERA, \n"
+                + "KEYLENGTH KEYL, \n"
+                + "USER_PASSWORD PASS \n"
+                + "FROM APPLICATION_USER \n"
+                + "WHERE NR_SEQUENCE = ?;"),
         SELECT_ALL_DICTIONARY(
                 "SELECT NR_SEQUENCE NR_SEQUENCE, \n"
                 + "DS_NAME DS_NAME, \n"
