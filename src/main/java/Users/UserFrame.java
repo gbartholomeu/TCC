@@ -5,6 +5,7 @@
  */
 package Users;
 
+import Constantes.Expressions;
 import Database.DAO;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.awt.Component;
@@ -113,7 +114,7 @@ public class UserFrame extends javax.swing.JFrame {
                     ((DefaultTableModel) getTblUser().getModel()).addColumn(getColumnName(rsMd.getColumnLabel(i)));
                 }
             } catch (SQLException ex) {
-                LOGGER.info(new StringBuilder("Falha na adição das colunas ao objeto de tabela: ").append(ex).toString());
+                LOGGER.info(new StringBuilder(Expressions.COMPONENTS.COLUMNN_ADD_FAIL.getExpression()).append(ex).toString());
             }
 
             try {
@@ -126,7 +127,7 @@ public class UserFrame extends javax.swing.JFrame {
                     ((DefaultTableModel) getTblUser().getModel()).insertRow(((ResultSet) rs).getRow() - 1, row);
                 }
             } catch (SQLException ex) {
-                LOGGER.info(new StringBuilder("Falha na adição das linhas ao objeto de tabela: ").append(ex).toString());
+                LOGGER.info(new StringBuilder(Expressions.COMPONENTS.ROW_ADD_FAIL.getExpression()).append(ex).toString());
             }
             getTblUser().getColumnModel().getColumn(2).setCellRenderer(tableCellRenderer);
             adjustTableColumns(getTblUser().getColumnModel());
@@ -139,16 +140,16 @@ public class UserFrame extends javax.swing.JFrame {
     private String getColumnName(String nmColunaCampo) {
         switch (nmColunaCampo) {
             case "USERNAME": {
-                return "Usuário";
+                return Expressions.TABLE_COLUMNS.USERNAME.getExpression();
             }
             case "FULL_NAME": {
-                return "Nome Completo";
+                return Expressions.TABLE_COLUMNS.FULL_NAME.getExpression();
             }
             case "IS_ADMIN": {
-                return "Administrador";
+                return Expressions.TABLE_COLUMNS.IS_ADMIN.getExpression();
             }
         }
-        return "Error";
+        return Expressions.TABLE_COLUMNS.NOT_A_COLUMN.getExpression();
     }
 
     private void adjustTableColumns(TableColumnModel columnModel) {

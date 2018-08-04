@@ -5,6 +5,7 @@
  */
 package Database;
 
+import Constantes.Expressions;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 /**
  *
@@ -34,6 +36,7 @@ public class DbConnection {
 //    public static String password = "281096";
     public static Connection con;
     public static String urlstring;
+    private final static Logger LOGGER = Logger.getLogger(DAO.class.getName());
 
     public static Connection getConnection() {
         try {
@@ -44,10 +47,10 @@ public class DbConnection {
             try {
                 setCon(DriverManager.getConnection(getUrl(), getUsername(), getPassword()));
             } catch (SQLException sqlEx) {
-                System.out.println("Failed to create the database connection." + sqlEx);
+                LOGGER.info(new StringBuilder(Expressions.CONNECTION.DATABASE_CONNECTION_EX.getExpression()).append(sqlEx).toString());
             }
         } catch (ClassNotFoundException clnfEx) {
-            System.out.println("Driver not found." + clnfEx);
+            LOGGER.info(new StringBuilder(Expressions.CONNECTION.DRIVER_CONNECTION_EX.getExpression()).append(clnfEx).toString());
         }
         return getCon();
     }
@@ -82,7 +85,7 @@ public class DbConnection {
             }
 
         } catch (IOException ex) {
-            System.out.println("Error reading file Config.txt");
+            LOGGER.info(new StringBuilder(Expressions.CONNECTION.CONFIG_FILE_EX.getExpression()).append(ex).toString());
         }
     }
 

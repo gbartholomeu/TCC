@@ -114,9 +114,4 @@ public class Const {
             return this.SQLCode;
         }
     }
-
-    public enum Expressions {
-
-    }
-
 }

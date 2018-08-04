@@ -6,6 +6,7 @@
 package Users;
 
 import Constantes.Const;
+import Constantes.Expressions;
 import Database.DAO;
 import Utils.Cryptography;
 import java.awt.event.KeyAdapter;
@@ -177,11 +178,11 @@ public class NewUserFrame extends javax.swing.JFrame {
                         key = ((ResultSet) rs).getInt("KEYL");
                     }
                 } catch (SQLException ex) {
-                    LOGGER.info(new StringBuilder().append("Falha na obtenção das configurações do usuário: ").append(ex).toString());
+                    LOGGER.info(new StringBuilder().append(Expressions.USER.USER_SELECT_RETURN_FAIL.getExpression()).append(ex).toString());
                 }
 
                 if ("1".equalsIgnoreCase(retorno)) {
-                    JOptionPane.showMessageDialog(this, "Usuário já cadastrado");
+                    JOptionPane.showMessageDialog(this, Expressions.USER.EXISTING_USER.getExpression());
                 } else {
                     Random r = new Random();
                     salt = Cryptography.getSecuredByte();
@@ -190,16 +191,16 @@ public class NewUserFrame extends javax.swing.JFrame {
                     byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, key, new String(getTxtPassw().getPassword()));
                     int retornoInsert = DAO.insertIntoDatabase(Const.SQL.INSERT_USER.getSqlCode(), getTxtUser().getText(), getTxtFullname().getText(), salt, interations, key, senhaCriptografia, getCheckBoxAdmin().isSelected() ? 1 : 0);
                     if (retornoInsert == 0) {
-                        JOptionPane.showMessageDialog(this, "Usuário não cadastrado");
+                        JOptionPane.showMessageDialog(this, Expressions.USER.NEW_USER_FAIL.getExpression());
                     } else {
-                        JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso.");
+                        JOptionPane.showMessageDialog(this, Expressions.USER.NEW_USER_SUCESS.getExpression());
                         this.dispose();
                         ((UserFrame) getParentFrame()).fillObjectsTable();
                     }
                 }
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Existem campos não informados.");
+            JOptionPane.showMessageDialog(this, Expressions.COMPONENTS.MISSING_FIELDS.getExpression());
         }
     }//GEN-LAST:event_btnCreateNewUserActionPerformed
 

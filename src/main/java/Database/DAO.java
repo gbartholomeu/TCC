@@ -5,6 +5,7 @@
  */
 package Database;
 
+import Constantes.Expressions;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -46,7 +47,7 @@ public class DAO {
             printQuery();
             rs = stmt.executeQuery();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha ao executar SELECT da base: ").append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.DAO.SELECT_BASE_EX.getExpression()).append(ex).toString());
             return ex.toString();
         }
         return (ResultSet) rs;
@@ -75,7 +76,7 @@ public class DAO {
             printQuery();
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha ao executar INSERT na base: ").append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.DAO.INSERT_BASE_EX.getExpression()).append(ex).toString());
         }
         return updateReturn;
     }
@@ -103,7 +104,7 @@ public class DAO {
             printQuery();
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha ao executar UPDATE na base: ").append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.DAO.UPDATE_BASE_EX.getExpression()).append(ex).toString());
         }
         return updateReturn;
     }
@@ -131,7 +132,7 @@ public class DAO {
             printQuery();
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha ao executar DELETE na base: ").append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.DAO.DELETE_BASE_EX.getExpression()).append(ex).toString());
         }
         return updateReturn;
     }

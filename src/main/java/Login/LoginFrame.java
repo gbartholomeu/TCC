@@ -6,6 +6,7 @@
 package Login;
 
 import Constantes.Const;
+import Constantes.Expressions;
 import Database.DAO;
 import Dictionary.DictionaryFrame;
 import Users.UserInstance;
@@ -169,7 +170,7 @@ public class LoginFrame extends javax.swing.JFrame {
                         isAdmin = ((ResultSet) rs).getInt("ADMIN");
                     }
                 } catch (SQLException ex) {
-                    LOGGER.info(new StringBuilder().append("Falha na obtenção das configurações do usuário: ").append(ex).toString());
+                    LOGGER.info(new StringBuilder().append(Expressions.USER.USER_SELECT_RETURN_FAIL.getExpression()).append(ex).toString());
                 }
 
                 if ("1".equalsIgnoreCase(retorno)) {
@@ -183,14 +184,14 @@ public class LoginFrame extends javax.swing.JFrame {
                         dic.setVisible(true);
                         getLoginFrame().setVisible(false);
                     } else {
-                        JOptionPane.showMessageDialog(getLoginFrame(), "Senha incorreta");
+                        JOptionPane.showMessageDialog(getLoginFrame(), Expressions.USER.WRONG_PASSWORD.getExpression());
                     }
                 } else {
-                    JOptionPane.showMessageDialog(getLoginFrame(), "Usuário não existe");
+                    JOptionPane.showMessageDialog(getLoginFrame(), Expressions.USER.MISSING_USER.getExpression());
                 }
             }
         } else {
-            JOptionPane.showMessageDialog(getLoginFrame(), "Por favor insira um usuário");
+            JOptionPane.showMessageDialog(getLoginFrame(), Expressions.USER.NO_USER.getExpression());
         }
     }//GEN-LAST:event_btnLoginActionPerformed
 
