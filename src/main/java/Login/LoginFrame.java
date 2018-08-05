@@ -156,7 +156,6 @@ public class LoginFrame extends javax.swing.JFrame {
         byte[] password = null;
         int isAdmin = 0;
         if (!"".equalsIgnoreCase(getTxtUser().getText().trim())) {
-
             Object rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), getTxtUser().getText());
             if (rs instanceof ResultSet) {
                 try {

@@ -579,7 +579,14 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDetailActionPerformed
 
     private void btnInactivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInactivateActionPerformed
-        int ieConfrma = JOptionPane.showConfirmDialog(getDicFrame(), "Deseja inativar o objeto " + getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 1) + "?", "", JOptionPane.YES_NO_OPTION);
+        String objectName = "";
+        if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
+            objectName = getTxtObjectName().getText();
+        } else {
+            objectName = String.valueOf(getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 1));
+        }
+
+        int ieConfrma = JOptionPane.showConfirmDialog(getDicFrame(), "Deseja inativar o objeto " + objectName + "?", "", JOptionPane.YES_NO_OPTION);
         if (ieConfrma == JOptionPane.YES_OPTION) {
             if (deleteObjectInDatabase() == 0) {
                 Object deleteFromDatabase = DAO.updateRegisterDatabase(Constantes.Const.SQL.UPDATE_OBJECT_FLAG.getSqlCode(), 0, getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
@@ -697,9 +704,15 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }
 
     private int deleteObjectInDatabase() {
-        Object delete = DAO.updateRegisterDatabase(DictionaryFrameController.getDropClause(getTxtObjectName().getText(), isProcedure(), isFunction(), isTrigger()));
+        String objectName = "";
+        if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
+            objectName = getTxtObjectName().getText();
+        } else {
+            objectName = String.valueOf(getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 1));
+        }
+        Object delete = DAO.updateRegisterDatabase(DictionaryFrameController.getDropClause(objectName, isProcedure(), isFunction(), isTrigger()));
         if (delete instanceof Integer) {
-            if ((int) delete == 0) {
+            if ((int) delete == 1 || (int) delete == 0) {
                 return 0;
             }
         }
@@ -707,7 +720,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }
 
     private int createObjectInDatabase() {
-        if (deleteObjectInDatabase() == 0) {
+        if (deleteObjectInDatabase() == -1) {
             return 0;
         }
         Object creating = DAO.updateRegisterDatabase(getTxtAreaSQL().getText());

@@ -21,7 +21,7 @@ public class DictionaryFrameController {
         //"DROP " + type + " IF EXISTS " + procFuncTrig + ";\n"
 
         return "CREATE " + type + " `" + procFuncTrig + "`"
-                + (isFunction || isProcedure ? " ()\n" : "\n")
+                + (isFunction || isProcedure ? " ()\n" : " ")
                 + (isFunction ? " RETURNS INT(255)\n" : (isTrigger ? " :CONDICAO ON :TABELA_ALVO \n" : "\n"))
                 + (isTrigger ? "FOR EACH ROW \n" : "\n")
                 + "BEGIN\n"
