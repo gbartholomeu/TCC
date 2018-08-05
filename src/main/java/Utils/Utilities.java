@@ -74,7 +74,7 @@ public class Utilities {
         try {
             data = format.parse(d);
         } catch (ParseException e) {
-            JOptionPane.showMessageDialog(null, "Data em formato inválido.");
+            System.out.println("Data em formato inválido.");
         }
         return data;
     }

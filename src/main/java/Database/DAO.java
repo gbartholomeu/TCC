@@ -5,6 +5,7 @@
  */
 package Database;
 
+import Constantes.Expressions;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -23,7 +24,7 @@ public class DAO {
     private static ResultSet rs = null;
     private final static Logger LOGGER = Logger.getLogger(DAO.class.getName());
 
-    public static ResultSet selectFromDatabase(String sql, Object... args) {
+    public static Object selectFromDatabase(String sql, Object... args) {
         try {
             con = DbConnection.getConnection();
             stmt = con.prepareStatement(sql);
@@ -46,12 +47,13 @@ public class DAO {
             printQuery();
             rs = stmt.executeQuery();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha ao executar SELECT da base: ").append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.DAO.SELECT_BASE_EX.getExpression()).append(ex).toString());
+            return ex.getStackTrace()[0].toString();
         }
-        return rs;
+        return (ResultSet) rs;
     }
 
-    public static int insertIntoDatabase(String sql, Object... args) {
+    public static Object insertIntoDatabase(String sql, Object... args) {
         int updateReturn = 0;
         try {
             con = DbConnection.getConnection();
@@ -74,12 +76,13 @@ public class DAO {
             printQuery();
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha ao executar INSERT na base: ").append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.DAO.INSERT_BASE_EX.getExpression()).append(ex).toString());
+            return ex.getStackTrace()[0].toString();
         }
-        return updateReturn;
+        return (int) updateReturn;
     }
 
-    public static int updateRegisterDatabase(String sql, Object... args) {
+    public static Object updateRegisterDatabase(String sql, Object... args) {
         int updateReturn = 0;
         try {
             con = DbConnection.getConnection();
@@ -102,12 +105,13 @@ public class DAO {
             printQuery();
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha ao executar UPDATE na base: ").append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.DAO.UPDATE_BASE_EX.getExpression()).append(ex).toString());
+            return ex.getStackTrace()[0].toString();
         }
-        return updateReturn;
+        return (int) updateReturn;
     }
 
-    public static int deleteFromDatabase(String sql, Object... args) {
+    public static Object deleteFromDatabase(String sql, Object... args) {
         int updateReturn = 0;
         try {
             con = DbConnection.getConnection();
@@ -130,9 +134,10 @@ public class DAO {
             printQuery();
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder("Falha ao executar DELETE na base: ").append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.DAO.DELETE_BASE_EX.getExpression()).append(ex).toString());
+            return ex.getStackTrace()[0].toString();
         }
-        return updateReturn;
+        return (int) updateReturn;
     }
 
     private static void printQuery() {

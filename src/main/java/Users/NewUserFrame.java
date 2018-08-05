@@ -5,14 +5,10 @@
  */
 package Users;
 
-import Login.*;
 import Constantes.Const;
+import Constantes.Expressions;
 import Database.DAO;
-import Dictionary.DictionaryFrame;
-import Users.UserInstance;
 import Utils.Cryptography;
-import static java.awt.Frame.MAXIMIZED_BOTH;
-import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -20,7 +16,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -29,9 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
-import sun.java2d.SunGraphicsEnvironment;
 
 /**
  *
@@ -90,11 +83,6 @@ public class NewUserFrame extends javax.swing.JFrame {
         jLabel1.setText("Nome completo:");
 
         checkBoxAdmin.setText("Administrador");
-        checkBoxAdmin.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkBoxAdminActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout pnlEditLayout = new javax.swing.GroupLayout(pnlEdit);
         pnlEdit.setLayout(pnlEditLayout);
@@ -180,54 +168,47 @@ public class NewUserFrame extends javax.swing.JFrame {
             byte[] salt = null;
             int interations = 1;
             int key = 1;
-            byte[] password = null;
-            int isAdmin = 0;
-            ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), getTxtUser().getText());
-            try {
-                while (rs.next()) {
-                    retorno = rs.getString("QTD");
-
-                    salt = rs.getBytes("SALT");
-                    interations = rs.getInt("INTERA");
-                    key = rs.getInt("KEYL");
-                    password = rs.getBytes("PASS");
-                    isAdmin = rs.getInt("isAdmin");
+            Object rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), getTxtUser().getText());
+            if (rs instanceof ResultSet) {
+                try {
+                    while (((ResultSet) rs).next()) {
+                        retorno = ((ResultSet) rs).getString("QTD");
+                        salt = ((ResultSet) rs).getBytes("SALT");
+                        interations = ((ResultSet) rs).getInt("INTERA");
+                        key = ((ResultSet) rs).getInt("KEYL");
+                    }
+                } catch (SQLException ex) {
+                    LOGGER.info(new StringBuilder().append(Expressions.USER.USER_SELECT_RETURN_FAIL.getExpression()).append(ex).toString());
                 }
-            } catch (SQLException ex) {
-                LOGGER.info(new StringBuilder().append("Falha na obtenção das configurações do usuário: ").append(ex).toString());
-            }
 
-            if ("1".equalsIgnoreCase(retorno)) {
-                JOptionPane.showMessageDialog(this, "Usuário já cadastrado");
-            } else {
-                Random r = new Random();
-                salt = Cryptography.getSecuredByte();
-                interations = r.nextInt(10) + 1;
-                int keyLength = r.nextInt(10) + 1;
-                byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, keyLength, new String(getTxtPassw().getPassword()));
-                int retornoInsert = DAO.insertIntoDatabase(Const.SQL.INSERT_USER.getSqlCode(), getTxtUser().getText(), getTxtFullname().getText(), salt, interations, keyLength, senhaCriptografia, getCheckBoxAdmin().isSelected() ? 1 : 0);
-                if (retornoInsert == 0) {
-                    JOptionPane.showMessageDialog(this, "Usuário não cadastrado");
+                if ("1".equalsIgnoreCase(retorno)) {
+                    JOptionPane.showMessageDialog(this, Expressions.USER.EXISTING_USER.getExpression());
                 } else {
-                    JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso.");
-                    this.dispose();
-                    ((UserFrame) parentFrame).fillObjectsTable();
+                    Random r = new Random();
+                    salt = Cryptography.getSecuredByte();
+                    interations = r.nextInt(10) + 1;
+                    key = r.nextInt(10) + 1;
+                    byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, key, new String(getTxtPassw().getPassword()));
+                    Object retornoInsert = DAO.insertIntoDatabase(Const.SQL.INSERT_USER.getSqlCode(), getTxtUser().getText(), getTxtFullname().getText(), salt, interations, key, senhaCriptografia, getCheckBoxAdmin().isSelected() ? 1 : 0);
+                    if (retornoInsert instanceof Integer) {
+                        if ((int) retornoInsert == 0) {
+                            JOptionPane.showMessageDialog(this, Expressions.USER.NEW_USER_FAIL.getExpression());
+                        } else {
+                            JOptionPane.showMessageDialog(this, Expressions.USER.NEW_USER_SUCESS.getExpression());
+                            this.dispose();
+                            ((UserFrame) getParentFrame()).fillObjectsTable();
+                        }
+                    }
                 }
             }
-
         } else {
-            JOptionPane.showMessageDialog(this, "Existem campos não informados.");
+            JOptionPane.showMessageDialog(this, Expressions.COMPONENTS.MISSING_FIELDS.getExpression());
         }
     }//GEN-LAST:event_btnCreateNewUserActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        loginInstance.dispose();
+        getNewUserFrame().dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
-
-    private void checkBoxAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxAdminActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_checkBoxAdminActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
@@ -247,10 +228,11 @@ public class NewUserFrame extends javax.swing.JFrame {
         getNewUserFrame().setLocationRelativeTo(null);
         getNewUserFrame().setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         getNewUserFrame().setResizable(false);
+        getNewUserFrame().addListeners();
         getNewUserFrame().addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                parentFrame.setVisible(true);
+                getParentFrame().setVisible(true);
             }
         });
     }
@@ -312,6 +294,10 @@ public class NewUserFrame extends javax.swing.JFrame {
 
     public JCheckBox getCheckBoxAdmin() {
         return checkBoxAdmin;
+    }
+
+    public JFrame getParentFrame() {
+        return parentFrame;
     }
 
 }

@@ -6,18 +6,22 @@
 package Users;
 
 import Constantes.Const;
+import Constantes.Expressions;
 import Database.DAO;
+import Dictionary.DictionaryFrame;
 import Utils.Cryptography;
-import static java.awt.Frame.MAXIMIZED_BOTH;
-import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.swing.JFrame;
-import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
-import sun.java2d.SunGraphicsEnvironment;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -26,6 +30,7 @@ import javax.swing.JPasswordField;
 public class UserNewPassword extends javax.swing.JFrame {
 
     private final JFrame parentFrame;
+    private final static Logger LOGGER = Logger.getLogger(UserNewPassword.class.getName());
 
     /**
      * Creates new form UserNewPassword
@@ -44,132 +49,194 @@ public class UserNewPassword extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        txtPassw = new javax.swing.JPasswordField();
-        jLabel2 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
-        btnOk = new javax.swing.JButton();
+        pnlEdit = new javax.swing.JPanel();
+        txtCurrentPw = new javax.swing.JPasswordField();
+        lblCurrentPw = new javax.swing.JLabel();
+        txtNewPw = new javax.swing.JPasswordField();
+        lblNewPassw = new javax.swing.JLabel();
+        pnlButtons = new javax.swing.JPanel();
+        btnChangePw = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setName("frmNewPassword"); // NOI18N
 
-        jPanel1.setLayout(new java.awt.BorderLayout());
+        pnlEdit.setPreferredSize(new java.awt.Dimension(201, 68));
 
-        jLabel2.setText("Nova senha:");
+        txtCurrentPw.setToolTipText("");
+        txtCurrentPw.setName("txtCurrentPw"); // NOI18N
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        lblCurrentPw.setText("Senha atual:");
+        lblCurrentPw.setName("lblCurrentPw"); // NOI18N
+
+        txtNewPw.setToolTipText("");
+        txtNewPw.setName("txtNewPw"); // NOI18N
+
+        lblNewPassw.setText("Nova senha:");
+        lblNewPassw.setName("lblNewPassw"); // NOI18N
+
+        javax.swing.GroupLayout pnlEditLayout = new javax.swing.GroupLayout(pnlEdit);
+        pnlEdit.setLayout(pnlEditLayout);
+        pnlEditLayout.setHorizontalGroup(
+            pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlEditLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2)
+                .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblNewPassw)
+                    .addComponent(lblCurrentPw, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtNewPw, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+                    .addComponent(txtCurrentPw))
+                .addContainerGap())
+        );
+        pnlEditLayout.setVerticalGroup(
+            pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlEditLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblCurrentPw)
+                    .addComponent(txtCurrentPw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPassw, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(19, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtPassw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(pnlEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtNewPw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblNewPassw))
+                .addGap(15, 15, 15))
         );
 
-        jPanel1.add(jPanel2, java.awt.BorderLayout.CENTER);
+        getContentPane().add(pnlEdit, java.awt.BorderLayout.CENTER);
 
-        btnOk.setText("Mudar");
-        btnOk.addActionListener(new java.awt.event.ActionListener() {
+        pnlButtons.setMinimumSize(new java.awt.Dimension(126, 23));
+        pnlButtons.setPreferredSize(new java.awt.Dimension(126, 23));
+        pnlButtons.setLayout(new java.awt.GridLayout(1, 0));
+
+        btnChangePw.setMnemonic('A');
+        btnChangePw.setText("Alterar");
+        btnChangePw.setName("btnChangePw"); // NOI18N
+        btnChangePw.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOkActionPerformed(evt);
+                btnChangePwActionPerformed(evt);
             }
         });
+        pnlButtons.add(btnChangePw);
 
+        btnCancel.setMnemonic('C');
         btnCancel.setText("Cancelar");
+        btnCancel.setMaximumSize(new java.awt.Dimension(63, 23));
+        btnCancel.setMinimumSize(new java.awt.Dimension(63, 23));
+        btnCancel.setName("btnCancel"); // NOI18N
+        btnCancel.setPreferredSize(new java.awt.Dimension(63, 23));
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCancelActionPerformed(evt);
             }
         });
+        pnlButtons.add(btnCancel);
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap(73, Short.MAX_VALUE)
-                .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnCancel)
-                .addContainerGap())
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnOk)
-                    .addComponent(btnCancel))
-                .addContainerGap(16, Short.MAX_VALUE))
-        );
-
-        jPanel1.add(jPanel3, java.awt.BorderLayout.SOUTH);
-
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+        getContentPane().add(pnlButtons, java.awt.BorderLayout.SOUTH);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-        Random r = new Random();
-        byte[] salt = Cryptography.getSecuredByte();
-        int interations = r.nextInt(10) + 1;
-        int keyLength = r.nextInt(10) + 1;
-        byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, keyLength, new String(getTxtPassw().getPassword()));
-        int retorno = DAO.insertIntoDatabase(Const.SQL.UPDATE_USER.getSqlCode(), salt, interations, keyLength, senhaCriptografia, UserInstance.getUsuarioAtivo());
-
-        if (retorno == 0) {
-            JOptionPane.showMessageDialog(this, "Usuário não cadastrado");
+    private void btnChangePwActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangePwActionPerformed
+        String retorno = "";
+        byte[] salt = null;
+        int interations = 1;
+        int key = 1;
+        byte[] password = null;
+        if ("".equalsIgnoreCase(new String(getTxtCurrentPw().getPassword())) || "".equalsIgnoreCase(new String(getTxtNewPw().getPassword()))) {
+            JOptionPane.showMessageDialog(getNewPassFrame(), Expressions.COMPONENTS.MISSING_FIELDS.getExpression());
         } else {
-            JOptionPane.showMessageDialog(this, "Senha alterada com sucesso");
-        }
+            Object rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER_PW.getSqlCode(), UserInstance.getUsuarioAtivo());
+            if (rs instanceof ResultSet) {
+                try {
+                    while (((ResultSet) rs).next()) {
+                        retorno = ((ResultSet) rs).getString("QTD");
+                        salt = ((ResultSet) rs).getBytes("SALT");
+                        interations = ((ResultSet) rs).getInt("INTERA");
+                        key = ((ResultSet) rs).getInt("KEYL");
+                        password = ((ResultSet) rs).getBytes("PASS");
+                    }
+                } catch (SQLException ex) {
+                    LOGGER.info(new StringBuilder().append(Expressions.USER.USER_SELECT_RETURN_FAIL.getExpression()).append(ex).toString());
+                }
 
-    }//GEN-LAST:event_btnOkActionPerformed
+                if ("1".equalsIgnoreCase(retorno)) {
+                    String currentPasswordField = new String(getTxtCurrentPw().getPassword());
+                    byte[] currentHash = Cryptography.getEncryptedPassword(currentPasswordField, salt, interations, key);
+                    String newPasswordField = new String(getTxtNewPw().getPassword());
+                    byte[] newHash = Cryptography.getEncryptedPassword(newPasswordField, salt, interations, key);
+
+                    if (Arrays.equals(currentHash, password)) {
+                        if (Arrays.equals(newHash, password)) {
+                            JOptionPane.showMessageDialog(getNewPassFrame(), Expressions.USER.NEW_PW_CONTENT_FAIL.getExpression());
+                        } else {
+                            Random r = new Random();
+                            salt = Cryptography.getSecuredByte();
+                            interations = r.nextInt(10) + 1;
+                            key = r.nextInt(10) + 1;
+                            byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, key, new String(getTxtNewPw().getPassword()));
+                            Object retornoInsert = DAO.updateRegisterDatabase(Const.SQL.UPDATE_USER.getSqlCode(), salt, interations, key, senhaCriptografia, UserInstance.getUsuarioAtivo());
+                            if (retornoInsert instanceof Integer) {
+                                if ((int) retornoInsert == 0) {
+                                    JOptionPane.showMessageDialog(this, Expressions.USER.NEW_PW_FAIL.getExpression());
+                                } else {
+                                    JOptionPane.showMessageDialog(this, Expressions.USER.NEW_PW_SUCESS.getExpression());
+                                    this.dispose();
+                                }
+                            }
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, Expressions.USER.CURRENT_PW_WRONG.getExpression());
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(getNewPassFrame(), Expressions.USER.NEW_PW_CONTENT_FAIL.getExpression());
+            }
+        }
+    }//GEN-LAST:event_btnChangePwActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        getUserPassFrame().dispose();
+        getNewPassFrame().dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
 
     public void setConfiguration() {
-        getUserPassFrame().setLocationRelativeTo(null);
-        getUserPassFrame().setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        getUserPassFrame().setResizable(false);
-        getUserPassFrame().addWindowListener(new WindowAdapter() {
+        getNewPassFrame().setLocationRelativeTo(null);
+        getNewPassFrame().setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        getNewPassFrame().setResizable(false);
+        getNewPassFrame().addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                parentFrame.setVisible(true);
+                getParentFrame().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
-    private javax.swing.JButton btnOk;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPasswordField txtPassw;
+    private javax.swing.JButton btnChangePw;
+    private javax.swing.JLabel lblCurrentPw;
+    private javax.swing.JLabel lblNewPassw;
+    private javax.swing.JPanel pnlButtons;
+    private javax.swing.JPanel pnlEdit;
+    private javax.swing.JPasswordField txtCurrentPw;
+    private javax.swing.JPasswordField txtNewPw;
     // End of variables declaration//GEN-END:variables
 
-    public UserNewPassword getUserPassFrame() {
+    public UserNewPassword getNewPassFrame() {
         return this;
     }
 
-    public JPasswordField getTxtPassw() {
-        return txtPassw;
+    public JPasswordField getTxtCurrentPw() {
+        return txtCurrentPw;
     }
+
+    public JPasswordField getTxtNewPw() {
+        return txtNewPw;
+    }
+
+    public JFrame getParentFrame() {
+        return parentFrame;
+    }
+
 }
