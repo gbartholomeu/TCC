@@ -6,6 +6,7 @@
 package Users;
 
 import Constantes.Const;
+import Constantes.Expressions;
 import Database.DAO;
 import Utils.Cryptography;
 import java.awt.event.KeyAdapter;
@@ -167,46 +168,47 @@ public class NewUserFrame extends javax.swing.JFrame {
             byte[] salt = null;
             int interations = 1;
             int key = 1;
-            ResultSet rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), getTxtUser().getText());
-            try {
-                while (rs.next()) {
-                    retorno = rs.getString("QTD");
-
-                    salt = rs.getBytes("SALT");
-                    interations = rs.getInt("INTERA");
-                    key = rs.getInt("KEYL");
+            Object rs = DAO.selectFromDatabase(Const.SQL.SELECT_USER.getSqlCode(), getTxtUser().getText());
+            if (rs instanceof ResultSet) {
+                try {
+                    while (((ResultSet) rs).next()) {
+                        retorno = ((ResultSet) rs).getString("QTD");
+                        salt = ((ResultSet) rs).getBytes("SALT");
+                        interations = ((ResultSet) rs).getInt("INTERA");
+                        key = ((ResultSet) rs).getInt("KEYL");
+                    }
+                } catch (SQLException ex) {
+                    LOGGER.info(new StringBuilder().append(Expressions.USER.USER_SELECT_RETURN_FAIL.getExpression()).append(ex).toString());
                 }
-            } catch (SQLException ex) {
-                LOGGER.info(new StringBuilder().append("Falha na obtenção das configurações do usuário: ").append(ex).toString());
-            }
 
-            if ("1".equalsIgnoreCase(retorno)) {
-                JOptionPane.showMessageDialog(this, "Usuário já cadastrado");
-            } else {
-                Random r = new Random();
-                salt = Cryptography.getSecuredByte();
-                interations = r.nextInt(10) + 1;
-                key = r.nextInt(10) + 1;
-                byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, key, new String(getTxtPassw().getPassword()));
-                int retornoInsert = DAO.insertIntoDatabase(Const.SQL.INSERT_USER.getSqlCode(), getTxtUser().getText(), getTxtFullname().getText(), salt, interations, key, senhaCriptografia, getCheckBoxAdmin().isSelected() ? 1 : 0);
-                if (retornoInsert == 0) {
-                    JOptionPane.showMessageDialog(this, "Usuário não cadastrado");
+                if ("1".equalsIgnoreCase(retorno)) {
+                    JOptionPane.showMessageDialog(this, Expressions.USER.EXISTING_USER.getExpression());
                 } else {
-                    JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso.");
-                    this.dispose();
-                    ((UserFrame) getParentFrame()).fillObjectsTable();
+                    Random r = new Random();
+                    salt = Cryptography.getSecuredByte();
+                    interations = r.nextInt(10) + 1;
+                    key = r.nextInt(10) + 1;
+                    byte[] senhaCriptografia = Cryptography.getSenhaEncriptografada(salt, interations, key, new String(getTxtPassw().getPassword()));
+                    Object retornoInsert = DAO.insertIntoDatabase(Const.SQL.INSERT_USER.getSqlCode(), getTxtUser().getText(), getTxtFullname().getText(), salt, interations, key, senhaCriptografia, getCheckBoxAdmin().isSelected() ? 1 : 0);
+                    if (retornoInsert instanceof Integer) {
+                        if ((int) retornoInsert == 0) {
+                            JOptionPane.showMessageDialog(this, Expressions.USER.NEW_USER_FAIL.getExpression());
+                        } else {
+                            JOptionPane.showMessageDialog(this, Expressions.USER.NEW_USER_SUCESS.getExpression());
+                            this.dispose();
+                            ((UserFrame) getParentFrame()).fillObjectsTable();
+                        }
+                    }
                 }
             }
-
         } else {
-            JOptionPane.showMessageDialog(this, "Existem campos não informados.");
+            JOptionPane.showMessageDialog(this, Expressions.COMPONENTS.MISSING_FIELDS.getExpression());
         }
     }//GEN-LAST:event_btnCreateNewUserActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         getNewUserFrame().dispose();
     }//GEN-LAST:event_btnCancelActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
