@@ -580,15 +580,39 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
     private void btnInactivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInactivateActionPerformed
         String objectName = "";
+        String message = "";
         if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
             objectName = getTxtObjectName().getText();
         } else {
             objectName = String.valueOf(getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 1));
         }
-
-        int ieConfrma = JOptionPane.showConfirmDialog(getDicFrame(), "Deseja inativar o objeto " + objectName + "?", "", JOptionPane.YES_NO_OPTION);
+        if (Expressions.COMPONENTS.ACTIVATE.getExpression().equalsIgnoreCase(getBtnInactivate().getText())) {
+            message = "Deseja ativar o objeto " + objectName + "?";
+        } else {
+            message = "Deseja inaativar o objeto " + objectName + "?";
+        }
+        int ieConfrma = JOptionPane.showConfirmDialog(getDicFrame(), message, "", JOptionPane.YES_NO_OPTION);
         if (ieConfrma == JOptionPane.YES_OPTION) {
-            if (deleteObjectInDatabase() == 0) {
+            if (Expressions.COMPONENTS.ACTIVATE.getExpression().equalsIgnoreCase(getBtnInactivate().getText())) {
+                if (createObjectInDatabase() == 2) {
+                    Object createInDatabase = DAO.updateRegisterDatabase(Constantes.Const.SQL.UPDATE_OBJECT_FLAG.getSqlCode(), 1, getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
+                    if (createInDatabase instanceof Integer) {
+                        if ((int) createInDatabase == 0) {
+                            JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.UPDATE_RETURN_FAIL.getExpression());
+                        } else {
+                            if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
+                                changeCard();
+                            }
+                            fillObjectsTable();
+                            int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
+                            getTblObjects().setRowSelectionInterval(lastRow, lastRow);
+                            Utilities.objectEnabledControl(getTblObjects().getRowCount() > 0, getBtnDetail());
+                            setBtnInactivateEnabledWithValidation(getTblObjects().getRowCount() > 0);
+                            JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.ACTIVATE_RETURN_OK.getExpression());
+                        }
+                    }
+                }
+            } else if (deleteObjectInDatabase() == 0) {
                 Object deleteFromDatabase = DAO.updateRegisterDatabase(Constantes.Const.SQL.UPDATE_OBJECT_FLAG.getSqlCode(), 0, getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
                 if (deleteFromDatabase instanceof Integer) {
                     if ((int) deleteFromDatabase == 0) {
@@ -723,7 +747,13 @@ public class DictionaryFrame extends javax.swing.JFrame {
         if (deleteObjectInDatabase() == -1) {
             return 0;
         }
-        Object creating = DAO.updateRegisterDatabase(getTxtAreaSQL().getText());
+        String objectContent = "";
+        if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
+            objectContent = getTxtAreaSQL().getText();
+        } else {
+            objectContent = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 4)); 
+        }
+        Object creating = DAO.updateRegisterDatabase(objectContent);
         if (creating instanceof Integer) {
             return (int) creating == 1 ? 1 : 2;
         }
@@ -735,15 +765,33 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }
 
     private boolean isProcedure() {
-        return (Utilities.validaString(getCmbBoxObjectType().getSelectedItem()).equalsIgnoreCase(Expressions.COMPONENTS.PROCEDURE_UPPER.getExpression()));
+        String objectName = "";
+        if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
+            objectName = String.valueOf(getCmbBoxObjectType().getSelectedItem());
+        } else {
+            objectName = String.valueOf(getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 2));
+        }
+        return (Utilities.validaString(objectName).equalsIgnoreCase(Expressions.COMPONENTS.PROCEDURE_UPPER.getExpression()));
     }
 
     private boolean isFunction() {
-        return (Utilities.validaString(getCmbBoxObjectType().getSelectedItem()).equalsIgnoreCase(Expressions.COMPONENTS.FUNCTION_UPPER.getExpression()));
+        String objectName = "";
+        if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
+            objectName = String.valueOf(getCmbBoxObjectType().getSelectedItem());
+        } else {
+            objectName = String.valueOf(getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 2));
+        }
+        return (Utilities.validaString(objectName).equalsIgnoreCase(Expressions.COMPONENTS.FUNCTION_UPPER.getExpression()));
     }
 
     private boolean isTrigger() {
-        return (Utilities.validaString(getCmbBoxObjectType().getSelectedItem()).equalsIgnoreCase(Expressions.COMPONENTS.TRIGGER_UPPER.getExpression()));
+        String objectName = "";
+        if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
+            objectName = String.valueOf(getCmbBoxObjectType().getSelectedItem());
+        } else {
+            objectName = String.valueOf(getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 2));
+        }
+        return (Utilities.validaString(objectName).equalsIgnoreCase(Expressions.COMPONENTS.TRIGGER_UPPER.getExpression()));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
