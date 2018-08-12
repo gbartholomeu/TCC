@@ -47,7 +47,7 @@ public class DAO {
             printQuery();
             rs = stmt.executeQuery();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder(Expressions.DAO.SELECT_BASE_EX.getExpression()).append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.DAO.SELECT_BASE_EX.getExpression()).append(ex.getMessage()).toString());
             return ex.getStackTrace()[0].toString();
         }
         return (ResultSet) rs;
@@ -76,7 +76,7 @@ public class DAO {
             printQuery();
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder(Expressions.DAO.INSERT_BASE_EX.getExpression()).append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.DAO.INSERT_BASE_EX.getExpression()).append(ex.getMessage()).toString());
             return ex.getStackTrace()[0].toString();
         }
         return (int) updateReturn;
@@ -105,7 +105,7 @@ public class DAO {
             printQuery();
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder(Expressions.DAO.UPDATE_BASE_EX.getExpression()).append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.DAO.UPDATE_BASE_EX.getExpression()).append(ex.getMessage()).toString());
             return ex.getStackTrace()[0].toString();
         }
         return (int) updateReturn;
@@ -134,7 +134,7 @@ public class DAO {
             printQuery();
             updateReturn = stmt.executeUpdate();
         } catch (SQLException ex) {
-            LOGGER.info(new StringBuilder(Expressions.DAO.DELETE_BASE_EX.getExpression()).append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.DAO.DELETE_BASE_EX.getExpression()).append(ex.getMessage()).toString());
             return ex.getStackTrace()[0].toString();
         }
         return (int) updateReturn;

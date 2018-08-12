@@ -945,7 +945,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
                     ((DefaultTableModel) getTblObjects().getModel()).addColumn(getColumnName(rsMd.getColumnLabel(i)));
                 }
             } catch (SQLException ex) {
-                LOGGER.info(new StringBuilder(Expressions.COMPONENTS.COLUMNN_ADD_FAIL.getExpression()).append(ex).toString());
+                LOGGER.info(new StringBuilder(Expressions.COMPONENTS.COLUMNN_ADD_FAIL.getExpression()).append(ex.getMessage()).toString());
             }
 
             try {

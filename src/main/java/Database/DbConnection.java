@@ -47,10 +47,10 @@ public class DbConnection {
             try {
                 setCon(DriverManager.getConnection(getUrl(), getUsername(), getPassword()));
             } catch (SQLException sqlEx) {
-                LOGGER.info(new StringBuilder(Expressions.CONNECTION.DATABASE_CONNECTION_EX.getExpression()).append(sqlEx).toString());
+                LOGGER.info(new StringBuilder(Expressions.CONNECTION.DATABASE_CONNECTION_EX.getExpression()).append(sqlEx.getMessage()).toString());
             }
         } catch (ClassNotFoundException clnfEx) {
-            LOGGER.info(new StringBuilder(Expressions.CONNECTION.DRIVER_CONNECTION_EX.getExpression()).append(clnfEx).toString());
+            LOGGER.info(new StringBuilder(Expressions.CONNECTION.DRIVER_CONNECTION_EX.getExpression()).append(clnfEx.getMessage()).toString());
         }
         return getCon();
     }
@@ -85,7 +85,7 @@ public class DbConnection {
             }
 
         } catch (IOException ex) {
-            LOGGER.info(new StringBuilder(Expressions.CONNECTION.CONFIG_FILE_EX.getExpression()).append(ex).toString());
+            LOGGER.info(new StringBuilder(Expressions.CONNECTION.CONFIG_FILE_EX.getExpression()).append(ex.getMessage()).toString());
         }
     }
 
