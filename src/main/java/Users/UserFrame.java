@@ -18,7 +18,6 @@ import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -183,6 +182,7 @@ public class UserFrame extends javax.swing.JFrame {
         popUpUser.add(popUpItemNewUser);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Usuários cadastrados");
 
         pnlMain.setLayout(new java.awt.BorderLayout());
 

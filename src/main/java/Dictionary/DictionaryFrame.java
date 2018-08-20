@@ -5,10 +5,8 @@
  */
 package Dictionary;
 
-import Constantes.Const;
 import Constantes.Expressions;
 import Database.DAO;
-import Users.NewUserFrame;
 import Users.UserFrame;
 import Users.UserInstance;
 import Users.UserNewPassword;
@@ -37,7 +35,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -72,6 +69,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private boolean isEditingMode = false;
     private boolean isCreatingMode = false;
     private char searchMode = 'A';
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     private final TableCellRenderer tableCellRenderer = new DefaultTableCellRenderer() {
 
@@ -232,6 +230,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         objectsJPM.add(filtersJMenu);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Dicionário de objetos");
         setName("frmDictionary"); // NOI18N
 
         pnlMain.setLayout(new java.awt.BorderLayout());
@@ -286,7 +285,6 @@ public class DictionaryFrame extends javax.swing.JFrame {
         lblObjectName.setToolTipText("");
         pnlSQLInformation.add(lblObjectName);
 
-        txtObjectName.setEnabled(false);
         txtObjectName.setPreferredSize(new java.awt.Dimension(170, 20));
         pnlSQLInformation.add(txtObjectName);
 
@@ -299,14 +297,16 @@ public class DictionaryFrame extends javax.swing.JFrame {
         lblObjectDate.setText("Data inserção: ");
         pnlSQLInformation.add(lblObjectDate);
 
-        txtObjectDate.setEnabled(false);
+        txtObjectDate.setEditable(false);
+        txtObjectDate.setBackground(new java.awt.Color(255, 255, 255));
         txtObjectDate.setPreferredSize(new java.awt.Dimension(90, 20));
         pnlSQLInformation.add(txtObjectDate);
 
         lblObjectUser.setText("Usuário: ");
         pnlSQLInformation.add(lblObjectUser);
 
-        txtObjectUser.setEnabled(false);
+        txtObjectUser.setEditable(false);
+        txtObjectUser.setBackground(new java.awt.Color(255, 255, 255));
         txtObjectUser.setPreferredSize(new java.awt.Dimension(80, 20));
         pnlSQLInformation.add(txtObjectUser);
 
@@ -449,8 +449,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
         getContentPane().add(pnlMain, java.awt.BorderLayout.CENTER);
 
         menuUser.setText("Usuários");
+        menuUser.setName(""); // NOI18N
 
-        menuItemUser.setText("Usuários");
+        menuItemUser.setText("Lista de usuários");
         menuItemUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuItemUserActionPerformed(evt);
@@ -476,6 +477,8 @@ public class DictionaryFrame extends javax.swing.JFrame {
     private void btnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewActionPerformed
         Utilities.objectEnabledControl(false, getBtnNew(), getBtnDetail());
         Utilities.objectEnabledControl(true, getBtnSave(), getBtnUndo());
+        Utilities.objectEditableControl(false, getTxtObjectDate(), getTxtObjectUser());
+        Utilities.objectEditableControl(true, getTxtObjectName(), getTxtAreaSQL());
         setIsCreatingMode(true);
         setBtnInactivateEnabledWithValidation(false);
         loadObjectTypeComboBox();
@@ -488,10 +491,12 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNewActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        //Grid mode - Creating or Inserting. Save label
         if (isEditingMode() || isCreatingMode()) {
+            //Creating object in database and inserting in dictionary table
             if ("".equalsIgnoreCase(getTxtObjectDate().getText())) {
+                //Managed to create object in database
                 if (createObjectInDatabase() == 2) {
-
                     int cdObjectType = -1;
                     Object objectType = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_OBJECT_TYPES_CODE.getSqlCode(), getCmbBoxObjectType().getItemAt(getCmbBoxObjectType().getSelectedIndex()));
                     if (objectType instanceof ResultSet) {
@@ -509,8 +514,9 @@ public class DictionaryFrame extends javax.swing.JFrame {
                             } else {
                                 Utilities.objectEnabledControl(false, getBtnSave(), getBtnUndo());
                                 Utilities.objectEnabledControl(true, getBtnNew(), getBtnDetail());
-                                setBtnInactivateEnabledWithValidation(true);
+                                Utilities.objectEditableControl(false, getTxtObjectName(), getTxtAreaSQL());
                                 fillObjectsTable(false);
+                                setBtnInactivateEnabledWithValidation(true);
                                 int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
                                 getTblObjects().setRowSelectionInterval(lastRow, lastRow);
                                 fillFieldsFromObject();
@@ -523,6 +529,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.VALIDATE_RETURN_FAIL.getExpression());
                 }
+                //Updating object in database and updating register in dictionary table    
             } else if (createObjectInDatabase() == 2) {
                 Object insertDatabase = DAO.updateRegisterDatabase(Constantes.Const.SQL.UPDATE_OBJECT.getSqlCode(), getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
                 if (insertDatabase instanceof Integer) {
@@ -531,22 +538,26 @@ public class DictionaryFrame extends javax.swing.JFrame {
                     } else {
                         Utilities.objectEnabledControl(false, getBtnSave(), getBtnUndo());
                         Utilities.objectEnabledControl(true, getBtnNew(), getBtnDetail());
-                        setBtnInactivateEnabledWithValidation(true);
+                        Utilities.objectEditableControl(false, getTxtObjectName(), getTxtAreaSQL());
                         fillObjectsTable(false);
+                        setBtnInactivateEnabledWithValidation(true);
                         int lastRow = getTblObjects().convertRowIndexToView(getTblObjects().getModel().getRowCount() - 1);
                         getTblObjects().setRowSelectionInterval(lastRow, lastRow);
                         fillFieldsFromObject();
                     }
                 }
-                changeCard();
-                setIsEditingMode(false);
-                setIsCreatingMode(false);
                 JOptionPane.showMessageDialog(this, Expressions.DAO_RETURN.VALIDATE_RETURN_OK.getExpression());
             }
+            setIsEditingMode(false);
+            setIsCreatingMode(false);
+            changeCard();
+            //Any mode - Viewing. Edit label    
         } else {
             setIsEditingMode(true);
-            Utilities.objectEnabledControl(false, getTxtObjectName(), getCmbBoxObjectType(), getBtnNew(), getBtnDetail());
+            Utilities.objectEnabledControl(false, getCmbBoxObjectType(), getBtnNew(), getBtnDetail(), getBtnInactivate());
             Utilities.objectEnabledControl(true, getBtnUndo());
+            Utilities.objectEditableControl(true, getTxtAreaSQL());
+            Utilities.objectEditableControl(false, getTxtObjectName());
             fillFieldsFromObject();
             loadObjectTypeComboBox(true);
             changeCardToGrid(false);
@@ -556,8 +567,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
 
     private void btnUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUndoActionPerformed
         Utilities.objectEnabledControl(true, getBtnNew());
-        Utilities.objectEnabledControl(false, getBtnSave(), getBtnUndo());
-        Utilities.objectEnabledControl(getTblObjects().getSelectedRow() > -1, getBtnDetail());
+        Utilities.objectEnabledControl(getTblObjects().getModel().getRowCount() > 0, getBtnSave(), getBtnUndo(), getBtnDetail());
         setIsEditingMode(false);
         setIsCreatingMode(false);
         setBtnInactivateEnabledWithValidation(getTblObjects().getSelectedRow() > -1);
@@ -665,11 +675,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_validateObjectActionPerformed
 
     private void tbdpanelMainStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tbdpanelMainStateChanged
-        if (((JTabbedPane) evt.getSource()).getSelectedComponent().equals(getPnlHistory())) {
-            getPnlButtons().setVisible(false);
-        } else {
-            getPnlButtons().setVisible(true);
-        }
+
     }//GEN-LAST:event_tbdpanelMainStateChanged
 
     private void tblObjectsMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblObjectsMouseReleased
@@ -751,7 +757,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         if ("cardDetail".equalsIgnoreCase(getSelectedCard())) {
             objectContent = getTxtAreaSQL().getText();
         } else {
-            objectContent = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 4)); 
+            objectContent = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 4));
         }
         Object creating = DAO.updateRegisterDatabase(objectContent);
         if (creating instanceof Integer) {
@@ -854,22 +860,36 @@ public class DictionaryFrame extends javax.swing.JFrame {
                 if (1 == selectedPane.getSelectedIndex()) {
                     getScrpnlHistoryContent().setPreferredSize(new Dimension(getDicFrame().getWidth(), 500));
                     fillHistoryTable(true);
-                    getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 2)));
+                    String objectSQL = "";
+                    if (getTblObjectHistory().getModel().getRowCount() > 0) {
+                        objectSQL = String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 2));
+                    }
+                    getTxtareaHistoryContent().setText(objectSQL);
                 }
-                Utilities.objectEnabledControl(0 == selectedPane.getSelectedIndex(), getBtnNew(), getBtnDetail());
+                Utilities.objectVisibilityControl(1 != selectedPane.getSelectedIndex(), getPnlButtons());
+                Utilities.objectEnabledControl(0 == selectedPane.getSelectedIndex() && getTblObjects().getModel().getRowCount() > 0, getBtnDetail());
+                Utilities.objectEnabledControl(0 == selectedPane.getSelectedIndex(), getBtnNew());
                 setBtnInactivateEnabledWithValidation(0 == selectedPane.getSelectedIndex());
             }
         });
 
         getTblObjects().getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             EventQueue.invokeLater(() -> {
-                getBtnInactivate().setText(((Boolean) getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 11)) ? Expressions.COMPONENTS.INACTIVATE.getExpression() : Expressions.COMPONENTS.ACTIVATE.getExpression());
-                Utilities.objectEnabledControl((Boolean) getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 11), getBtnSave());
+                boolean isActive = false;
+                if (getTblObjectHistory().getModel().getRowCount() > 0) {
+                    isActive = Utilities.validaBoolean(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 11));
+                }
+                getBtnInactivate().setText(isActive ? Expressions.COMPONENTS.INACTIVATE.getExpression() : Expressions.COMPONENTS.ACTIVATE.getExpression());
+                Utilities.objectEnabledControl(isActive && getTblObjects().getModel().getRowCount() > 0, getBtnSave());
             });
         });
         getTblObjectHistory().getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             EventQueue.invokeLater(() -> {
-                getTxtareaHistoryContent().setText(String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 2)));
+                String objectSQL = "";
+                if (getTblObjectHistory().getModel().getRowCount() > 0) {
+                    objectSQL = String.valueOf(getTblObjectHistory().getModel().getValueAt(getTblObjectHistory().getSelectedRow(), 2));
+                }
+                getTxtareaHistoryContent().setText(objectSQL);
             });
         });
         getTblObjects().addMouseListener(new MouseAdapter() {
@@ -904,7 +924,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }
 
     private void setButtonsConfiguration() {
-        getBtnDetail().setEnabled(getTblObjects().getRowCount() > 0);
+        Utilities.objectEnabledControl(getTblObjects().getRowCount() > 0, getBtnSave(), getBtnDetail());
         setBtnInactivateEnabledWithValidation(getTblObjects().getRowCount() > 0);
     }
 
@@ -986,7 +1006,12 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }
 
     private void fillHistoryTable(boolean selectFirstRow) {
-        Object rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICTIONARY_HISTORY.getSqlCode(), getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
+        int seqObject = -1;
+
+        if (getTblObjects().getModel().getRowCount() > 0) {
+            seqObject = Utilities.validaInt(getTblObjects().getValueAt(getTblObjects().getSelectedRow(), 0));
+        }
+        Object rs = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_ALL_DICTIONARY_HISTORY.getSqlCode(), seqObject);
         if (rs instanceof ResultSet) {
             while (getTblObjectHistory().getRowCount() > 0) {
                 ((DefaultTableModel) getTblObjectHistory().getModel()).removeRow(0);
@@ -1136,7 +1161,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 4));
         getTxtAreaSQL().setText(str);
         str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 5));
-        getTxtObjectDate().setText(str);
+        getTxtObjectDate().setText(dateFormat.format(str));
         str = String.valueOf(getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 7));
         getTxtObjectUser().setText(str);
     }
@@ -1148,7 +1173,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
     }
 
     private void setBtnInactivateEnabledWithValidation(boolean setActivate) {
-        Utilities.objectEnabledControl(UserInstance.isAdmin() && setActivate, getBtnInactivate());
+        Utilities.objectEnabledControl(UserInstance.isAdmin() && setActivate && getTblObjects().getModel().getRowCount() > 0, getBtnInactivate());
     }
 
     private void controlEditButton() {
@@ -1157,8 +1182,8 @@ public class DictionaryFrame extends javax.swing.JFrame {
             Utilities.objectEnabledControl(!getBtnNew().isEnabled(), getTxtAreaSQL());
         } else {
             getBtnSave().setText(Expressions.COMPONENTS.EDIT.getExpression());
-            Utilities.objectEnabledControl(!getBtnNew().isEnabled(), getTxtAreaSQL(), getCmbBoxObjectType());
-            Utilities.objectEnabledControl(getBtnNew().isEnabled(), getBtnSave());
+            Utilities.objectEnabledControl(!getBtnNew().isEnabled() && getTblObjects().getModel().getRowCount() > 0, getCmbBoxObjectType());
+            Utilities.objectEnabledControl(getBtnNew().isEnabled() && getTblObjects().getModel().getRowCount() > 0, getBtnSave());
         }
     }
 
