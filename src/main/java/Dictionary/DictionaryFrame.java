@@ -508,7 +508,8 @@ public class DictionaryFrame extends javax.swing.JFrame {
                                     cdObjectType = ((ResultSet) objectType).getInt("object_code");
                                 }
                             } catch (SQLException ex) {
-                                Logger.getLogger(DictionaryFrame.class.getName()).log(Level.SEVERE, null, ex);
+                                JOptionPane.showMessageDialog(this, "Ocorreu um erro ao carregar o comboBox de tipos. " + ex.getMessage());
+                                return;
                             }
                             Object insertDatabase = DAO.insertIntoDatabase(Constantes.Const.SQL.INSERT_OBJECT.getSqlCode(), getTxtObjectName().getText(), cdObjectType, getTxtAreaSQL().getText(), UserInstance.getUsuarioAtivo(), UserInstance.getUsuarioAtivo());
                             if (insertDatabase instanceof Integer) {

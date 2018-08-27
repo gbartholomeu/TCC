@@ -169,7 +169,8 @@ public class LoginFrame extends javax.swing.JFrame {
                         isAdmin = ((ResultSet) rs).getInt("ADMIN");
                     }
                 } catch (SQLException ex) {
-                    LOGGER.info(new StringBuilder().append(Expressions.USER.USER_SELECT_RETURN_FAIL.getExpression()).append(ex).toString());
+                    JOptionPane.showMessageDialog(getLoginFrame(), Expressions.USER.USER_SELECT_RETURN_FAIL.getExpression() + ex.getMessage());
+                    return;
                 }
 
                 if ("1".equalsIgnoreCase(retorno)) {
@@ -188,6 +189,8 @@ public class LoginFrame extends javax.swing.JFrame {
                 } else {
                     JOptionPane.showMessageDialog(getLoginFrame(), Expressions.USER.MISSING_USER.getExpression());
                 }
+            } else {
+                JOptionPane.showMessageDialog(getLoginFrame(), String.valueOf(rs));
             }
         } else {
             JOptionPane.showMessageDialog(getLoginFrame(), Expressions.USER.NO_USER.getExpression());
