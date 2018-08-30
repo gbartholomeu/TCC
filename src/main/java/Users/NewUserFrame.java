@@ -66,6 +66,7 @@ public class NewUserFrame extends javax.swing.JFrame {
         btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Cadastrar usuário");
         setName("frmLogin"); // NOI18N
 
         txtUser.setToolTipText("Insira o usuário de login");

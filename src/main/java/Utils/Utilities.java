@@ -5,17 +5,24 @@
  */
 package Utils;
 
+import Constantes.Expressions;
+import Login.LoginFrame;
 import java.awt.Component;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.swing.JOptionPane;
+import java.util.logging.Logger;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.text.JTextComponent;
 
 /**
  *
  * @author gbartholomeu
  */
 public class Utilities {
+
+    private final static Logger LOGGER = Logger.getLogger(Utilities.class.getName());
 
     public static String validaString(Object o) {
         try {
@@ -64,6 +71,15 @@ public class Utilities {
         return 0;
     }
 
+    public static boolean validaBoolean(Object o) {
+        try {
+            return Boolean.parseBoolean(o.toString());
+        } catch (Exception e) {
+
+        }
+        return false;
+    }
+
     public static boolean inEqualsIgnoreCase(String palava, String... contextos) {
         return palava.toUpperCase().contains(contextos.toString().toUpperCase());
     }
@@ -94,6 +110,23 @@ public class Utilities {
             for (Object obj : args) {
                 if (obj instanceof Component) {
                     ((Component) obj).setVisible(visible);
+                }
+            }
+        }
+    }
+
+    public static void objectEditableControl(boolean editable, Object... args) {
+        if (args != null && args.length > 0) {
+            for (Object obj : args) {
+                if (obj instanceof JTextComponent) {
+                    ((JTextComponent) obj).setEditable(editable);
+                    try {
+                        ((JTextComponent) obj).setBackground(new java.awt.Color(255, 255, 255));
+                    } catch (Exception ex) {
+                        LOGGER.info(ex.getMessage());
+                    }
+                } else if (obj instanceof JComboBox) {
+                    ((JComboBox) obj).setEditable(editable);
                 }
             }
         }

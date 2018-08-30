@@ -16,7 +16,7 @@ public class DictionaryFrameController {
     //SET GLOBAL log_bin_trust_function_creators = 1;
     public static String getProcedureFunctionTriggerTemplate(String nameObject, boolean isProcedure, boolean isFunction, boolean isTrigger) {
 
-        String procFuncTrig = nameObject.equals("") ? "new_procedure" : nameObject;
+        String procFuncTrig = nameObject.equals("") ? "new_object" : nameObject;
         String type = (isProcedure) ? "PROCEDURE" : (isFunction) ? "FUNCTION" : (isTrigger) ? "TRIGGER" : "";
         //"DROP " + type + " IF EXISTS " + procFuncTrig + ";\n"
 

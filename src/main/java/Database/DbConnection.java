@@ -8,6 +8,7 @@ package Database;
 import Constantes.Expressions;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -26,19 +27,10 @@ public class DbConnection {
     public static String password = "";
     public static String DBSettings = "?useTimezone=true&serverTimezone=America/Sao_Paulo&useSSL=false";
     public static String driverName = "com.mysql.cj.jdbc.Driver";
-    //public static String url = "jdbc:mysql://cristianweb.com.br:3306/crist609_database_management?useTimezone=true&serverTimezone=America/Sao_Paulo&useSSL=false";
-    //public static String username = "crist609_root";
-    //public static String password = "281096";
-
-//    public static String url = "jdbc:mysql://localhost:3306/database_management?useTimezone=true&serverTimezone=UTC&useSSL=false";
-//    public static String driverName = "com.mysql.cj.jdbc.Driver";
-//    public static String username = "root";
-//    public static String password = "281096";
     public static Connection con;
     public static String urlstring;
-    private final static Logger LOGGER = Logger.getLogger(DAO.class.getName());
 
-    public static Connection getConnection() {
+    public static Connection getConnection() throws SQLException, ClassNotFoundException, Exception {
         try {
             if ("".equalsIgnoreCase(getUrl())) {
                 readTxt();
@@ -47,45 +39,42 @@ public class DbConnection {
             try {
                 setCon(DriverManager.getConnection(getUrl(), getUsername(), getPassword()));
             } catch (SQLException sqlEx) {
-                LOGGER.info(new StringBuilder(Expressions.CONNECTION.DATABASE_CONNECTION_EX.getExpression()).append(sqlEx).toString());
+                throw new SQLException(Expressions.CONNECTION.DATABASE_CONNECTION_EX.getExpression() + sqlEx.getMessage());
             }
         } catch (ClassNotFoundException clnfEx) {
-            LOGGER.info(new StringBuilder(Expressions.CONNECTION.DRIVER_CONNECTION_EX.getExpression()).append(clnfEx).toString());
+            throw new ClassNotFoundException(Expressions.CONNECTION.DRIVER_CONNECTION_EX.getExpression() + clnfEx.getMessage());
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
         }
         return getCon();
     }
 
-    private static void readTxt() {
+    private static void readTxt() throws Exception {
         String line = null;
         BufferedReader bufferedReader = null;
         try {
-            if (!new File("src/main/java/Database/Config.dmdat").exists()) {
-                setUrl("jdbc:mysql://cristianweb.com.br:3306/crist609_database_management?useTimezone=true&serverTimezone=America/Sao_Paulo&useSSL=false");
-                setUsername("crist609_root");
-                setPassword("281096");
-            } else {
-                FileReader fileReader = new FileReader(new File("src/main/java/Database/Config.dmdat"));
+            File configFile = new File("src/main/java/Database/Config.dmdat");
+            if (configFile.exists()) {
+                FileReader fileReader = new FileReader(configFile);
                 bufferedReader = new BufferedReader(fileReader);
                 while ((line = bufferedReader.readLine()) != null) {
                     if (line.contains("serverip##")) {
                         String urlTxt = line.replace("serverip##", "");
                         setUrl("jdbc:mysql://" + urlTxt + getDBSettings());
-                        System.out.println(line);
                     } else if (line.contains("serverusername##")) {
                         String usernameTxt = line.replace("serverusername##", "");
                         setUsername(usernameTxt);
-                        System.out.println(usernameTxt);
                     } else if (line.contains("serverpass##")) {
                         String passTxt = line.replace("serverpass##", "");
                         setPassword(passTxt);
-                        System.out.println(line);
                     }
                 }
                 bufferedReader.close();
+            } else {
+                throw new FileNotFoundException("Arquivo de configuração não encontrado.");
             }
-
         } catch (IOException ex) {
-            LOGGER.info(new StringBuilder(Expressions.CONNECTION.CONFIG_FILE_EX.getExpression()).append(ex).toString());
+            throw new IOException(Expressions.CONNECTION.CONFIG_FILE_EX.getExpression() + ex.getMessage());
         }
     }
 

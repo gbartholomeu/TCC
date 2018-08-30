@@ -8,7 +8,6 @@ package Users;
 import Constantes.Const;
 import Constantes.Expressions;
 import Database.DAO;
-import Dictionary.DictionaryFrame;
 import Utils.Cryptography;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -21,7 +20,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.JPasswordField;
-import javax.swing.SwingUtilities;
 
 /**
  *
@@ -59,6 +57,7 @@ public class UserNewPassword extends javax.swing.JFrame {
         btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Alterar senha");
         setName("frmNewPassword"); // NOI18N
 
         pnlEdit.setPreferredSize(new java.awt.Dimension(201, 68));

@@ -76,7 +76,8 @@ public class Expressions {
         DELETE_RETURN_FAIL("Falha ao excluir objeto."),
         VALIDATE_RETURN_FAIL("Falha ao validar objeto, verifique a sintaxe."),
         VALIDATE_RETURN_OK("Objeto validado com sucesso."),
-        INACTIVATE_RETUNR_OK("Objecto inativado com sucesso.");
+        INACTIVATE_RETUNR_OK("Objeto inativado com sucesso."),
+        ACTIVATE_RETURN_OK("Objeto ativado com sucesso.");
 
         private final String expression;
 
