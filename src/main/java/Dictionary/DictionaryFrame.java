@@ -304,7 +304,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         txtObjectDate.setPreferredSize(new java.awt.Dimension(130, 20));
         pnlSQLInformation.add(txtObjectDate);
 
-        lblObjectUser.setText("Usuário: ");
+        lblObjectUser.setText("Usuário criação: ");
         pnlSQLInformation.add(lblObjectUser);
 
         txtObjectUser.setEditable(false);
@@ -597,7 +597,7 @@ public class DictionaryFrame extends javax.swing.JFrame {
         loadObjectTypeComboBox(true);
         controlEditButton();
         Utilities.objectEnabledControl((Boolean) getTblObjects().getModel().getValueAt(getTblObjects().getSelectedRow(), 11), getBtnSave());
-        Utilities.objectEditableControl(false, getTxtObjectName(), getTxtAreaSQL());
+        Utilities.objectEditableControl(false, getTxtObjectName(), getTxtAreaSQL(), getCmbBoxObjectType());
     }//GEN-LAST:event_btnDetailActionPerformed
 
     private void btnInactivateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInactivateActionPerformed

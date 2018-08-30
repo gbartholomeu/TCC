@@ -12,13 +12,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
+
 /**
  *
  * @author gbartholomeu
  */
 public class Utilities {
-    
+
     private final static Logger LOGGER = Logger.getLogger(Utilities.class.getName());
 
     public static String validaString(Object o) {
@@ -111,16 +114,19 @@ public class Utilities {
             }
         }
     }
+
     public static void objectEditableControl(boolean editable, Object... args) {
         if (args != null && args.length > 0) {
             for (Object obj : args) {
                 if (obj instanceof JTextComponent) {
                     ((JTextComponent) obj).setEditable(editable);
-                    try{
+                    try {
                         ((JTextComponent) obj).setBackground(new java.awt.Color(255, 255, 255));
-                    }catch(Exception ex){
+                    } catch (Exception ex) {
                         LOGGER.info(ex.getMessage());
                     }
+                } else if (obj instanceof JComboBox) {
+                    ((JComboBox) obj).setEditable(editable);
                 }
             }
         }
