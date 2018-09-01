@@ -108,6 +108,9 @@ public class Const {
         SELECT_ALL_USERS("SELECT USERNAME, FULL_NAME, IS_ADMIN \n"
                 + "FROM APPLICATION_USER \n"
                 + "ORDER BY FULL_NAME;"),
+        SELECT_USER_USERNAME("SELECT USERNAME \n"
+                + "FROM APPLICATION_USER \n"
+                + "WHERE NR_SEQUENCE = ?;"),
         UPDATE_OBJECT_FLAG("UPDATE DICTIONARY \n"
                 + "SET IS_ACTIVE = ? \n"
                 + "WHERE NR_SEQUENCE = ?;");

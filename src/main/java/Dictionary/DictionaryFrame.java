@@ -24,7 +24,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -936,6 +935,18 @@ public class DictionaryFrame extends javax.swing.JFrame {
         fillObjectsTable();
         setButtonsConfiguration();
         setCardLayout((CardLayout) getPnlGrid().getLayout());
+        String dsUsuario = "";
+        Object usuarioLogado = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_USER_USERNAME.getSqlCode(), UserInstance.getUsuarioAtivo());
+        if (usuarioLogado instanceof ResultSet) {
+            try {
+                if (((ResultSet) usuarioLogado).next()) {
+                    dsUsuario = ((ResultSet) usuarioLogado).getString("USERNAME");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(DictionaryFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        getDicFrame().setTitle("Dicionário de dados || Usuário conectado: " + dsUsuario);
     }
 
     private void setDicFrameConfiguration() {

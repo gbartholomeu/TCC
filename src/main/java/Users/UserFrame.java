@@ -7,6 +7,7 @@ package Users;
 
 import Constantes.Expressions;
 import Database.DAO;
+import Dictionary.DictionaryFrame;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.awt.Component;
 import java.awt.EventQueue;
@@ -18,6 +19,7 @@ import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -73,6 +75,18 @@ public class UserFrame extends javax.swing.JFrame {
     public void setConfiguration() {
         setUserFrameConfiguration();
         fillObjectsTable();
+                String dsUsuario = "";
+        Object usuarioLogado = DAO.selectFromDatabase(Constantes.Const.SQL.SELECT_USER_USERNAME.getSqlCode(), UserInstance.getUsuarioAtivo());
+        if (usuarioLogado instanceof ResultSet) {
+            try {
+                if (((ResultSet) usuarioLogado).next()) {
+                    dsUsuario = ((ResultSet) usuarioLogado).getString("USERNAME");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(DictionaryFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        getUserFrame().setTitle("Lista de usuários || Usuário conectado: " + dsUsuario);
     }
 
     private void setUserFrameConfiguration() {
